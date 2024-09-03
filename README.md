@@ -1,5 +1,5 @@
 # ITD Pipeline
-<img src="https://github.com/NYCUchaolab/ITD-pipeline/blob/main/ITD-pipeline.png" width="1000" height="270">
+<img src="https://github.com/NYCUchaolab/ITD-pipeline/blob/main/ITD-pipeline.png" width="1000" height="265">
 
 
 ## ITD_pipeline.sh
