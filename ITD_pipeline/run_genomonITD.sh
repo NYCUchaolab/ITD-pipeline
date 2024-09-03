@@ -21,10 +21,7 @@ Norma_sample_ID=${3}  # [3] Normal Sample ID
 Tumor_sample_ID=${4}   # [4] Tumor Sample ID
 
 # Create an array of file and case IDs
-IDs=(
-  "${Normal_file_ID},${Norma_sample_ID}"
-  "${Tumor_file_ID},${Tumor_sample_ID}"
-)
+IDs=("${Normal_file_ID},${Norma_sample_ID}" "${Tumor_file_ID},${Tumor_sample_ID}")
 
 ############### Main ###############
 for entry in "${IDs[@]}"; 
@@ -46,35 +43,8 @@ do
   else
     echo "${file_ID} is Done"
   fi
-done
-wait  
-     
-    
-for entry in "${IDs[@]}"; 
-do
-  IFS=',' read -r file_ID sample_ID <<< "$entry"
-  #
-  sample_chr=$(echo "${file_ID}" | sed 's/.*\.//')
-  file_ID_change=${file_ID:0:20}.${sample_chr}
-  #deduplicate
-
-  # Concatenate or move filtered output
-  cd ${cwd}
-  if [[ -f "${cwd}/tmp/genomon_ITD/${file_ID_change}/itd_list.tsv" ]]; then
-    if [[ -f "genomon_ITD/${sample_ID}.ITD.tsv" ]]; then
-      cat tmp/genomon_ITD/${file_ID_change}/itd_list.tsv >> genomon_ITD/${sample_ID}.ITD.tsv
-      echo -e "Merge ${file_ID} to ${sample_ID}.ITD.tsv" >> ${cwd}/tmp/genomonITD.out
-    else
-      mv tmp/genomon_ITD/${file_ID_change}/itd_list.tsv genomon_ITD/${sample_ID}.ITD.tsv
-    fi
-  else
-    echo "${sample_ID} No ITD.list.tsv"
-  fi
-  # Clean up
-  #rm -r tmp/genomon_ITD/${file_ID}/
-  
-  ############### .out File ###############
+    ############### .out File ###############
   # Create the .out file if it does not exist
-  [[ ! -f ${cwd}/tmp/genomonITD.out ]] && touch ${cwd}/tmp/genomonITD.out
-  echo -e "${file_ID}\t${sample_ID}" >> ${cwd}/tmp/genomonITD.out
+
 done
+  
