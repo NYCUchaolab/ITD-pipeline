@@ -11,20 +11,29 @@
     - `run_ScanITD.sh`
 4. Deduplicate & Filter ITDs
 5. Merge ITDs from all chromosomes within the same sample for each caller
-6. Merge results from all three callers
-
-## run_genomonITD.sh
+    - `merge_genomonITD.sh`
+    - `merge_pindel.sh`
+    - `merge_scanITD.sh`
+7. Concat results from all three callers
+### run_genomonITD.sh
 1. Read `parameters.config` (which includes basic paths and parameters)
 2. Execute Genomon-ITDetecter (`detectITD.sh`)
 3. Store files in separate directories by File ID and chromosome
-
-## run_pindel.sh
+### run_pindel.sh
 1. Read `parameters.config` (which includes basic paths and parameters)
 2. Execute Pindel
 3. Run `somatic_indelfilter.pl` (pindel's T/N filtering script, requires `somatic.indel.filter.config`)
 4. Store files in separate directories by Case ID and chromosome
-
-## run_ScanITD.sh
+### run_scanITD.sh
 1. Read `parameters.config` (which includes basic paths and parameters)
 2. Execute ScanITD (`ScanITD.py`)
 3. Store files in separate directories by File ID and chromosome
+### merge_genomonITD.sh
+1. Read `parameters.config` (which includes basic paths and parameters)
+2. Merge files that share the same Sample ID
+### merge_pindel.sh
+1. Read `parameters.config` (which includes basic paths and parameters)
+2. Merge files that share the same Case ID
+### merge_scanITD.sh
+1. Read `parameters.config` (which includes basic paths and parameters)
+2. Merge files that share the same Sample ID
