@@ -40,17 +40,6 @@ if [[ ! -d "${sample_directory}" ]]; then
   cp ${path_to_filter_config} ${sample_directory}/
   perl ${path_to_somatic_indelfilter} ${sample_directory}/somatic.indel.filter.config > ${sample_directory}/${case_ID}.filter.log 2>&1
 
-  # Deduplicate (If you need deduplication, you can add the relevant code here)
-
-  # Concatenate or move filtered output
-  if [[ -f "${cwd}/pindel/${case_ID}.ITD.filter.output" ]]; then
-    # Append starting from line 15
-    tail -n +17 ${sample_directory}/indel.filter.output >> ${cwd}/pindel/${case_ID}.ITD.filter.output
-    echo -e "Merge ${Tumor_file_ID} and ${Normal_file_ID} to ${case_ID}.ITD.filter.output" >> ${cwd}/tmp/pindel.out
-  else
-    mv ${sample_directory}/indel.filter.output ${cwd}/pindel/${case_ID}.ITD.filter.output
-  fi
-
   # Clean up
   # rm -r ${sample_directory}
 

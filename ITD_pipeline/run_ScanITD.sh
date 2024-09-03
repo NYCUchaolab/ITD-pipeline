@@ -49,26 +49,5 @@ do
 done
 wait
 
-for entry in "${IDs[@]}"; 
-do
-  IFS=',' read -r file_ID sample_ID <<< "$entry"
-  # deduplicate
-  
-  # Concatenate or move filtered output
-  cd ${cwd}
-  if [[ -f "scanITD/${sample_ID}.ITD.vcf" ]]; then
-    tail -n +16 tmp/scanITD/${file_ID}/${sample_ID}.itd.vcf >> scanITD/${sample_ID}.ITD.vcf
-    echo -e "Merge ${file_ID} to ${sample_ID}.ITD.output.vcf" >> ${cwd}/tmp/scanITD.out
-  else
-    mv tmp/scanITD/${file_ID}/${sample_ID}.itd.vcf scanITD/${sample_ID}.ITD.vcf
-  fi
-  # Clean up
-  #rm -r tmp/genomon_ITD/${file_ID}/
-
-  ############### .out File ###############
-  # Create the .out file if it does not exist
-  [[ ! -f ${cwd}/tmp/scanITD.out ]] && touch ${cwd}/tmp/scanITD.out
-  echo -e "${file_ID}\t${sample_ID}" >> ${cwd}/tmp/scanITD.out
-done
 
 
