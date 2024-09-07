@@ -10,7 +10,7 @@
 
 
 ############### Preprocessing ############### 
-source /home/data/data_Jeffery/ITD-detection/script/ITD_pipeline/parameters.config
+source /home/data/data_Jeffery/ITD-detection/script/ITD_pipeline/caller_parameters.config
 
 conda activate GenomonITD
 cd ${cwd}
@@ -45,6 +45,8 @@ do
   fi
     ############### .out File ###############
   # Create the .out file if it does not exist
+  
+  if [[ ! -f itd_list.tsv ]] && touch itd_list.tsv
 
 done
   

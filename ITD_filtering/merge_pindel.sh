@@ -14,27 +14,26 @@
 ############### Preprocessing ############### 
 source /home/data/data_Jeffery/ITD-detection/script/ITD_pipeline/parameters.config
 
-conda activate Pindel
-cd ${cwd}
-
 Normal_file_ID=${1}  # [1] Normal File ID
 Tumor_file_ID=${2}   # [2] Tumor File ID
 case_ID=${3}         # [3] Case ID
 
-config_file=config/${Tumor_file_ID}_${Normal_file_ID}_bam_config.txt
 sample_directory=${cwd}/tmp/pindel/${Tumor_file_ID}_${Normal_file_ID}
+cd ${sample_directory}
 
 ############### Main ###############
-if [[ -f "${cwd}/pindel/${case_ID}.ITD.filter.output" ]]; then
+if [[ -f "${cwd}/pindel/${case_ID}.itd.filter.de.tsv" ]]; then
   # Append starting from line 15
-  tail -n +17 ${sample_directory}/indel.filter.output >> ${cwd}/pindel/${case_ID}.ITD.filter.output
-  echo -e "Merge ${Tumor_file_ID} and ${Normal_file_ID} to ${case_ID}.ITD.filter.output" >> ${cwd}/tmp/pindel.out
+  tail -n +17 ${sample_directory}/itd.filter.de.tsv >> ${cwd}/pindel/${case_ID}.itd.filter.de.tsv
+  #echo -e "Merge ${Tumor_file_ID} and ${Normal_file_ID} to ${case_ID}.ITD.filter.output" >> ${cwd}/tmp/pindel.out
 else
-  mv ${sample_directory}/indel.filter.output ${cwd}/pindel/${case_ID}.ITD.filter.output
+  mv ${sample_directory}/itd.filter.de.tsv ${cwd}/pindel/${case_ID}.itd.filter.de.tsv
 fi
+# Clean up
+#rm -r ${sample_directory}
 
 ############### .out File ###############
 # Create the .out file if it does not exist
-[[ ! -f ${cwd}/tmp/genomonITD.out ]] && touch ${cwd}/tmp/genomonITD.out
-echo -e "${file_ID}\t${sample_ID} merge down" >> ${cwd}/tmp/genomonITD.out
+[[ ! -f ${cwd}/tmp/pindel.out ]] && touch ${cwd}/tmp/pindel.out
+echo -e "${file_ID}\t${sample_ID} merge down" >> ${cwd}/tmp/pindel.out
 

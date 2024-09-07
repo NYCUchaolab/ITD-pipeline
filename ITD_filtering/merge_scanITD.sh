@@ -14,9 +14,6 @@
 ############### Preprocessing ############### 
 source /home/data/data_Jeffery/ITD-detection/script/ITD_pipeline/parameters.config
 
-conda activate GenomonITD
-cd ${cwd}
-
 Normal_file_ID=${1}  # [1] Normal File ID
 Tumor_file_ID=${2}   # [2] Tumor File ID
 Norma_sample_ID=${3}  # [3] Normal Sample ID
@@ -24,21 +21,21 @@ Tumor_sample_ID=${4}   # [4] Tumor Sample ID
 
 # Create an array of file and case IDs
 IDs=("${Normal_file_ID},${Norma_sample_ID}" "${Tumor_file_ID},${Tumor_sample_ID}")
-
+cd ${cwd}
 ############### Main ###############
 for entry in "${IDs[@]}"; 
 do
   IFS=',' read -r file_ID sample_ID <<< "$entry"
   cd ${cwd}
   
-  if [[ -f "scanITD/${sample_ID}.ITD.vcf" ]]; then
-    tail -n +16 tmp/scanITD/${file_ID}/${sample_ID}.itd.vcf >> scanITD/${sample_ID}.ITD.vcf
-    echo -e "Merge ${file_ID} to ${sample_ID}.ITD.output.vcf" >> ${cwd}/tmp/scanITD.out
+  if [[ -f "${cwd}/scanITD/${sample_ID}.itd.filter.de.tsv" ]]; then
+    tail -n +16 ${cwd}/tmp/scanITD/${file_ID}/itd.filter.de.tsv >> ${cwd}/scanITD/${sample_ID}.itd.filter.de.tsv
+    #echo -e "Merge ${file_ID} to ${sample_ID}.ITD.output.vcf" >> ${cwd}/tmp/scanITD.out
   else
-    mv tmp/scanITD/${file_ID}/${sample_ID}.itd.vcf scanITD/${sample_ID}.ITD.vcf
+    mv ${cwd}/tmp/scanITD/${file_ID}/itd.filter.de.tsv ${cwd}/scanITD/${sample_ID}.itd.filter.de.tsv
   fi
   # Clean up
-  #rm -r tmp/genomon_ITD/${file_ID}/
+  #rm -r tmp/scanITD/${file_ID}/
 
   ############### .out File ###############
   # Create the .out file if it does not exist
