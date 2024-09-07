@@ -10,7 +10,10 @@
     - `run_pindel.sh`
     - `run_ScanITD.sh`
 4. Deduplicate & Filter ITDs
-5. Merge ITDs from all chromosomes within the same sample for each caller
+    - `filter_genomonITD.sh`
+    - `filter_pindel.sh`
+    - `filter_scanITD.sh`
+6. Merge ITDs from all chromosomes within the same sample for each caller
     - `merge_genomonITD.sh`
     - `merge_pindel.sh`
     - `merge_scanITD.sh`
@@ -28,6 +31,18 @@
 1. Read `parameters.config` (which includes basic paths and parameters)
 2. Execute ScanITD (`ScanITD.py`)
 3. Store files in separate directories by File ID and chromosome
+### filter_genomonITD.sh
+1. Read `parameters.config` (which includes basic paths and parameters)
+2. Filter ITD that length between 3 ~ 300
+3. Deduplicate same ITD that share the same Sample ID
+### filter_pindel.sh
+1. Read `parameters.config` (which includes basic paths and parameters)
+2. Filter ITD that length between 3 ~ 300
+3. Deduplicate same ITD that share the same Sample ID
+### filter_scanITD.sh
+1. Read `parameters.config` (which includes basic paths and parameters)
+2. Filter ITD that length between 3 ~ 300
+3. Deduplicate same ITD that share the same Sample ID
 ### merge_genomonITD.sh
 1. Read `parameters.config` (which includes basic paths and parameters)
 2. Merge files that share the same Sample ID
