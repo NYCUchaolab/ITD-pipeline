@@ -38,7 +38,7 @@
 ### filter_pindel.sh
 1. Read `parameters.config` (which includes basic paths and parameters)
 2. Filter ITD that length between 3 ~ 300
-3. Deduplicate same ITD that share the same Sample ID
+3. Deduplicate same ITD that share the same Case ID
 ### filter_scanITD.sh
 1. Read `parameters.config` (which includes basic paths and parameters)
 2. Filter ITD that length between 3 ~ 300
@@ -46,9 +46,11 @@
 ### merge_genomonITD.sh
 1. Read `parameters.config` (which includes basic paths and parameters)
 2. Merge files that share the same Sample ID
+3. Compare and Merge files that share the same Case ID
 ### merge_pindel.sh
 1. Read `parameters.config` (which includes basic paths and parameters)
 2. Merge files that share the same Case ID
 ### merge_scanITD.sh
 1. Read `parameters.config` (which includes basic paths and parameters)
 2. Merge files that share the same Sample ID
+3. Compare and Merge files that share the same Case ID
