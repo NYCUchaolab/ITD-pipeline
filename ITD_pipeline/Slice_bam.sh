@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Source the parameters from the config file
-source /home/data/data_Jeffery/ITD-detection/script/ITD_pipeline/parameters.config
+source /home/data/data_Jeffery/ITD-detection/script/ITD_pipeline/caller_parameters.config
 
 # Open samtools env
 conda activate WES_preprocessing_SNP

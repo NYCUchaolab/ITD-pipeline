@@ -9,7 +9,7 @@
 #SBATCH --mail-type=ALL    # 指定送出email時機 可為NONE, BEGIN, END, FAIL, REQUEUE, ALL
 
 ############### Preprocessing ############### 
-source /home/data/data_Jeffery/ITD-detection/script/ITD_pipeline/parameters.config
+source /home/data/data_Jeffery/ITD-detection/script/ITD_pipeline/caller_parameters.config
 
 conda activate Pindel
 cd ${cwd}
