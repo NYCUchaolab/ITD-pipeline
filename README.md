@@ -26,10 +26,11 @@
 ## Calling
 ### run_genomonITD.sh
 **Required Files:**
-   - `hg38.refGene.gtf` (2020)[https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/genes/]
-   - `hg38.knowGene.gtf` (2023)[https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/genes/]
-   - `hg38.ensGene.gtf` (2020)[https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/genes/]
-   - `simpleRepeat.txt` (2022)[https://hgdownload.soe.ucsc.edu/goldenPath/hg38/database/]
+   - `hg38.refGene.gtf` [2020](https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/genes/)
+   - `hg38.knowGene.gtf` [2023](https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/genes/)
+   - `hg38.ensGene.gtf` [2020](https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/genes/)
+   - `simpleRepeat.txt` [2022](https://hgdownload.soe.ucsc.edu/goldenPath/hg38/database/)
+
 **Run:**
 1. Read configuration parameters from `parameters.config`.
 2. Execute Genomon-ITDetecter via `detectITD.sh`.
@@ -40,6 +41,7 @@
    - `parameters.config`
    - `somatic_indelfilter.pl` (Pindel's T/N filtering script)
    - `somatic.indel.filter.config`
+
 **Run:**
 1. Read configuration parameters from `parameters.config`.
 2. Execute Pindel for ITD detection.
@@ -49,6 +51,7 @@
 ### run_scanITD.sh
 **Required Files:**
    - `gencode.v36.annotation.gtf` (divided into 23 chromosomes)
+
 **Run:**
 1. Read configuration parameters from `parameters.config`.
 2. Execute ScanITD using `ScanITD.py`.
