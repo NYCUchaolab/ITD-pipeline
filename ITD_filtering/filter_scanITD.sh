@@ -13,11 +13,11 @@ source /home/data/data_Jeffery/ITD-detection/script/ITD_pipeline/parameters.conf
 
 Normal_file_ID=${1}  # [1] Normal File ID
 Tumor_file_ID=${2}   # [2] Tumor File ID
-Norma_sample_ID=${3} # [3] Normal Sample ID
+Normal_sample_ID=${3} # [3] Normal Sample ID
 Tumor_sample_ID=${4} # [4] Tumor Sample ID
 
 # Create an array of file and case IDs
-IDs=("${Normal_file_ID},${Norma_sample_ID}" "${Tumor_file_ID},${Tumor_sample_ID}")
+IDs=("${Normal_file_ID},${Normal_sample_ID}" "${Tumor_file_ID},${Tumor_sample_ID}")
 
 ############### Main ###############
 for entry in "${IDs[@]}"; 
@@ -28,20 +28,23 @@ do
   
   Input_itd_file=./${sample_ID}.itd.vcf
   declare -a itd_list=()
+  if [[ -f itd.filter.de.tsv ]]; then
+    echo -e "${file_ID}\titd.filter.de.tsv already exists. Exiting."  >> ${cwd}/tmp/scanITD.out
+    continue
+  fi
+  touch itd.filter.de.tsv
   
   # Read the ITD file starting from line 16
   while IFS=$'\t' read -r -a line; 
   do
     start_POS=${line[1]}  # Start position
-    SVLEN=$(echo "${line[7]}" | grep -oP 'END=\K[0-9]+' || echo 0)
-    end_POS=$(($start_POS + $SVLEN))  # End position
+    end_POS=$(echo "${line[7]}" | grep -oP 'END=\K[0-9]+' || echo 0)
     # Check if the length of the ITD region is between 3 and 300
     if [ $((${end_POS} - ${start_POS})) -gt 3 ] && [ $((${end_POS} - ${start_POS})) -lt 300 ]; then
       overlap_found=false
       # Iterate over each ITD in the list to check for overlaps
       for itd in "${itd_list[@]}"; do
         IFS=',' read -r list_start_POS list_end_POS <<< "$itd"
-        # Determine which ITD is longer
         if [ $((${list_end_POS} - ${list_start_POS})) -ge $((${end_POS} - ${start_POS})) ]; then
           # Existing ITD is longer and overlaps with the current ITD
           if [ $((${list_start_POS} - 20)) -lt ${end_POS} ] && [ $((${list_end_POS} + 20)) -gt ${start_POS} ]; then
@@ -75,8 +78,6 @@ do
     fi
   done < <(tail -n +16 $Input_itd_file)
   ############### Output ###############
-  [[ ! -f itd.filter.de.tsv ]] && touch itd.filter.de.tsv
-  
   # Write the matching rows to itd.filter.de.tsv
   for itd in "${itd_list[@]}"; 
   do
@@ -84,16 +85,15 @@ do
     while IFS=$'\t' read -r -a line; 
     do
       start_POS=${line[1]}  # Start position
-      SVLEN=$(echo "${line[7]}" | grep -oP 'END=\K[0-9]+')
-      end_POS=$(($start_POS + $SVLEN))  # End position
+      end_POS=$(echo "${line[7]}" | grep -oP 'END=\K[0-9]+' || echo 0)
       if [ "$itd_start" -eq "$start_POS" ] && [ "$itd_end" -eq "$end_POS" ]; then
-        echo "${line[@]}" >> itd.filter.de.tsv
+        echo -e "$(IFS=$'\t'; echo "${line[*]}")" >> itd.filter.de.tsv
       fi
-    done < <(tail -n +1 $Input_itd_file)
+    done < <(tail -n +16 $Input_itd_file)
   done
 done
 
 ############### .out File ###############
 # Create the .out file if it does not exist
 [[ ! -f ${cwd}/tmp/scanITD.out ]] && touch ${cwd}/tmp/scanITD.out
-echo -e "${Norma_sample_ID}\t${Tumor_sample_ID} filter finish" >> ${cwd}/tmp/scanITD.out
+echo -e "${Normal_sample_ID}\t${Tumor_sample_ID} filter finish" >> ${cwd}/tmp/scanITD.out

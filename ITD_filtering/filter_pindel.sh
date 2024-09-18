@@ -20,6 +20,13 @@ case_ID=${3}         # [3] Case ID
 sample_directory=${cwd}/tmp/pindel/${Tumor_file_ID}_${Normal_file_ID}
 cd ${sample_directory}
 
+
+# Ensure the output file exists
+if [[ -f itd.filter.de.tsv ]]; then
+  echo -e "${file_ID}\titd.filter.de.tsv already exists. Exiting."  >> ${cwd}/tmp/pindel.out
+  exit 1
+fi
+touch itd.filter.de.tsv
 ############### Main ###############
 Input_itd_file=./indel.filter.output
 
@@ -73,9 +80,6 @@ do
   fi
 done < <(tail -n +17 $Input_itd_file)
 
-# Ensure the output file exists
-[[ ! -f itd.filter.de.tsv ]] && touch itd.filter.de.tsv
-
 # Write the matching rows to itd.filter.de1.tsv
 for itd in "${itd_list[@]}"; do
     IFS=',' read -r itd_start itd_end <<< "$itd"
@@ -84,8 +88,9 @@ for itd in "${itd_list[@]}"; do
         SVLEN=$(echo "${line[7]}" | grep -oP 'SVLEN=\K[0-9]+' || echo 0)  # Default to 0 if not found
         end_POS=$(($start_POS + $SVLEN))  # end pos
         if [ "$itd_start" -eq "$start_POS" ] && [ "$itd_end" -eq "$end_POS" ]; then
-            echo "Writing matching line to itd.filter.de1.tsv: ${line[@]}"
-            echo "${line[@]}" >> itd.filter.de.tsv
+            #echo "Writing matching line to itd.filter.de1.tsv: ${line[@]}"
+            echo -e "$(IFS=$'\t'; echo "${line[*]}")" >> itd.filter.de.tsv
+            #echo "${line[@]}" >> itd.filter.de.tsv
         fi
     done < <(tail -n +17 $Input_itd_file)
 done
