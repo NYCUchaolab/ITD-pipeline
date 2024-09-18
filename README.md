@@ -26,12 +26,11 @@
 ## Calling
 ### run_genomonITD.sh
 **Required Files:**
-   - `hg38.refGene.gtf` (2020)
-   - `hg38.knowGene.gtf` (2023)
-   - `hg38.ensGene.gtf` (2020)
-   - `simpleRepeat.txt` (2022)
-
-**Workflow:**
+   - `hg38.refGene.gtf` (2020)[https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/genes/]
+   - `hg38.knowGene.gtf` (2023)[https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/genes/]
+   - `hg38.ensGene.gtf` (2020)[https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/genes/]
+   - `simpleRepeat.txt` (2022)[https://hgdownload.soe.ucsc.edu/goldenPath/hg38/database/]
+**Run:**
 1. Read configuration parameters from `parameters.config`.
 2. Execute Genomon-ITDetecter via `detectITD.sh`.
 3. Store results in directories organized by File ID and chromosome.
@@ -41,8 +40,7 @@
    - `parameters.config`
    - `somatic_indelfilter.pl` (Pindel's T/N filtering script)
    - `somatic.indel.filter.config`
-
-**Workflow:**
+**Run:**
 1. Read configuration parameters from `parameters.config`.
 2. Execute Pindel for ITD detection.
 3. Apply `somatic_indelfilter.pl` to filter somatic indels.
@@ -51,8 +49,7 @@
 ### run_scanITD.sh
 **Required Files:**
    - `gencode.v36.annotation.gtf` (divided into 23 chromosomes)
-
-**Workflow:**
+**Run:**
 1. Read configuration parameters from `parameters.config`.
 2. Execute ScanITD using `ScanITD.py`.
 3. Store results in directories organized by File ID and chromosome.
@@ -60,19 +57,16 @@
 ## Filtering and Deduplication:
 
 ### filter_genomonITD.sh
-**Workflow:**
 1. Read configuration parameters from `parameters.config`.
 2. Filter ITDs within length range 3 to 300 base pairs.
 3. Deduplicate ITDs sharing the same Sample ID.
 
 ### filter_pindel.sh
-**Workflow:**
 1. Read configuration parameters from `parameters.config`.
 2. Filter ITDs within length range 3 to 300 base pairs.
 3. Deduplicate ITDs sharing the same Case ID.
 
 ### filter_scanITD.sh
-**Workflow:**
 1. Read configuration parameters from `parameters.config`.
 2. Filter ITDs within length range 3 to 300 base pairs.
 3. Deduplicate ITDs sharing the same Sample ID.
@@ -80,29 +74,23 @@
 ## Merging ITD Results:
 
 ### merge_genomonITD.sh
-**Workflow:**
 1. Read configuration parameters from `parameters.config`.
 2. Merge results for ITDs sharing the same Sample ID.
 3. Compare and merge results for ITDs sharing the same Case ID.
 
 ### merge_pindel.sh
-**Workflow:**
 1. Read configuration parameters from `parameters.config`.
 2. Merge results for ITDs sharing the same Sample ID.
 
 ### erge_scanITD.sh
-**Workflow:**
 1. Read configuration parameters from `parameters.config`.
 2. Merge results for ITDs sharing the same Sample ID.
 
 ### merge_genomonITD_TN.sh
-**Workflow:**
 1. Compare and merge tumor/normal ITD files for the same Case ID.
 
 ### merge_scanITD_TN.sh
-**Workflow:**
 1. Compare and merge tumor/normal ITD files for the same Case ID.
 
 ### merge_all_caller.sh
-**Workflow:**
 1. Output an ITD if it is detected by at least two of the three ITD callers (GenomonITD, Pindel, ScanITD).
