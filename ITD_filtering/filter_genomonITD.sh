@@ -13,11 +13,11 @@ source /home/data/data_Jeffery/ITD-detection/script/ITD_pipeline/parameters.conf
 
 Normal_file_ID=${1}  # [1] Normal File ID
 Tumor_file_ID=${2}   # [2] Tumor File ID
-Norma_sample_ID=${3} # [3] Normal Sample ID
+Normal_sample_ID=${3} # [3] Normal Sample ID
 Tumor_sample_ID=${4} # [4] Tumor Sample ID
 
 # Create an array of file and case IDs
-IDs=("${Normal_file_ID},${Norma_sample_ID}" "${Tumor_file_ID},${Tumor_sample_ID}")
+IDs=("${Normal_file_ID},${Normal_sample_ID}" "${Tumor_file_ID},${Tumor_sample_ID}")
 
 ############### Main ###############
 for entry in "${IDs[@]}"; 
@@ -30,6 +30,11 @@ do
   Input_itd_file=${cwd}/tmp/genomon_ITD/${file_ID_change}/itd_list.tsv
   declare -a itd_list=()
   
+  if [[ -f itd.filter.de.tsv ]]; then
+    echo -e "${file_ID}\titd.filter.de.tsv already exists. Exiting."  >> ${cwd}/tmp/genomon_ITD.out
+    continue
+  fi
+  touch itd.filter.de.tsv
   # Read the ITD file starting from line 16
   while IFS=$'\t' read -r -a line; 
   do
@@ -78,9 +83,7 @@ do
   done < <(tail -n +1 $Input_itd_file)
   
   ############### Output ###############
-  [[ ! -f itd.filter.de.tsv ]] && touch itd.filter.de.tsv
-  
-  # Write the matching rows to itd.filter.de.tsv
+  touch itd.filter.de.tsv
   for itd in "${itd_list[@]}"; 
   do
     IFS=',' read -r itd_start itd_end <<< "$itd"
@@ -89,7 +92,8 @@ do
       start_POS=${line[8]}  # [8]: start position
       end_POS=${line[9]}    # [9]: end position
       if [ "$itd_start" -eq "$start_POS" ] && [ "$itd_end" -eq "$end_POS" ]; then
-        echo "${line[@]}" >> itd.filter.de.tsv
+        echo -e "$(IFS=$'\t'; echo "${line[*]}")" >> itd.filter.de.tsv
+        #echo "${line[@]}" >> itd.filter.de.tsv
       fi
     done < <(tail -n +1 $Input_itd_file)
   done
@@ -98,4 +102,4 @@ done
 ############### .out File ###############
 # Create the .out file if it does not exist
 [[ ! -f ${cwd}/tmp/genomon_ITD.out ]] && touch ${cwd}/tmp/genomon_ITD.out
-echo -e "${Norma_sample_ID}\t${Tumor_sample_ID} filter finish" >> ${cwd}/tmp/genomon_ITD.out
+echo -e "${Normal_sample_ID}\t${Tumor_sample_ID} filter finish" >> ${cwd}/tmp/genomon_ITD.out

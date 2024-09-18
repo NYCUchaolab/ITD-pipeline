@@ -1,18 +1,19 @@
 #!/bin/sh
 
 # Source the parameters from the config file
-source /home/data/data_Jeffery/ITD-detection/script/ITD_pipeline/caller_parameters.config
+source /home/data/data_Jeffery/ITD-detection/script/ITD_pipeline/parameters.config
 
 # Open samtools env
 conda activate WES_preprocessing_SNP
 
 cd ${cwd}
+
 ############### slice bam ###############
 for file_ID in download/*.bam
 do
   # Extract the base name of the file without the extension
   file_id=$(basename ${file_ID} .bam)
-
+  chr=(chr4 chr5 chr6 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 chrX chrY)
   # Loop through all chromosomes specified in the chr array
   for chr in "${chr[@]}"; 
   do

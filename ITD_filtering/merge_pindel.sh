@@ -19,21 +19,23 @@ Tumor_file_ID=${2}   # [2] Tumor File ID
 case_ID=${3}         # [3] Case ID
 
 sample_directory=${cwd}/tmp/pindel/${Tumor_file_ID}_${Normal_file_ID}
+
 cd ${sample_directory}
 
 ############### Main ###############
 if [[ -f "${cwd}/pindel/${case_ID}.itd.filter.de.tsv" ]]; then
-  # Append starting from line 15
-  tail -n +17 ${sample_directory}/itd.filter.de.tsv >> ${cwd}/pindel/${case_ID}.itd.filter.de.tsv
-  #echo -e "Merge ${Tumor_file_ID} and ${Normal_file_ID} to ${case_ID}.ITD.filter.output" >> ${cwd}/tmp/pindel.out
+  cat "${sample_directory}/itd.filter.de.tsv" >> "${cwd}/pindel/${case_ID}.itd.filter.de.tsv"
 else
-  mv ${sample_directory}/itd.filter.de.tsv ${cwd}/pindel/${case_ID}.itd.filter.de.tsv
+  mv "${sample_directory}/itd.filter.de.tsv" "${cwd}/pindel/${case_ID}.itd.filter.de.tsv"
 fi
+
+sort -u -o "${cwd}/pindel/${case_ID}.itd.filter.de.tsv" "${cwd}/pindel/${case_ID}.itd.filter.de.tsv"
+
 # Clean up
 #rm -r ${sample_directory}
 
 ############### .out File ###############
 # Create the .out file if it does not exist
-[[ ! -f ${cwd}/tmp/pindel.out ]] && touch ${cwd}/tmp/pindel.out
-echo -e "${file_ID}\t${sample_ID} merge down" >> ${cwd}/tmp/pindel.out
+[[ ! -f "${cwd}/tmp/pindel.out" ]] && touch "${cwd}/tmp/pindel.out"
+echo -e "${file_ID}\t${sample_ID} merge down" >> "${cwd}/tmp/pindel.out"
 
