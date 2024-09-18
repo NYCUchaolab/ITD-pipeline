@@ -1,7 +1,6 @@
 # ITD Pipeline
 <img src="https://github.com/NYCUchaolab/ITD-pipeline/blob/main/ITD-pipeline.png" width="1000" height="265">
 
-
 ## ITD_pipeline.sh
 1. Slice BAM files by chromosome using `Slice_bam.sh` (Chromosomes 1, 2, 3, and 7 will be further divided into p and q arms)
 2. Create tumor/normal pair configurations by sample using `Make_config.sh`
@@ -13,44 +12,88 @@
     - `filter_genomonITD.sh`
     - `filter_pindel.sh`
     - `filter_scanITD.sh`
-6. Merge ITDs from all chromosomes within the same sample for each caller
+5. Merge ITDs from all chromosomes within the same sample for each caller
     - `merge_genomonITD.sh`
     - `merge_pindel.sh`
     - `merge_scanITD.sh`
-7. Concat results from all three callers
+    - For tumor/normal comparison:
+       - `merge_genomonITD_TN.sh`
+       - `merge_scanITD_TN.sh`
+         
+6. Combine the ITD results from all three callers into a final output:
+     - `merge_all_caller.sh`
+
+## Calling
 ### run_genomonITD.sh
-1. Read `parameters.config` (which includes basic paths and parameters)
-2. Execute Genomon-ITDetecter (`detectITD.sh`)
-3. Store files in separate directories by File ID and chromosome
+**Required Files:**
+   - `hg38.refGene.gtf` [2020](https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/genes/)
+   - `hg38.knowGene.gtf` [2023](https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/genes/)
+   - `hg38.ensGene.gtf` [2020](https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/genes/)
+   - `simpleRepeat.txt` [2022](https://hgdownload.soe.ucsc.edu/goldenPath/hg38/database/)
+
+**Run:**
+1. Read configuration parameters from `parameters.config`.
+2. Execute Genomon-ITDetecter via `detectITD.sh`.
+3. Store results in directories organized by File ID and chromosome.
+
 ### run_pindel.sh
-1. Read `parameters.config` (which includes basic paths and parameters)
-2. Execute Pindel
-3. Run `somatic_indelfilter.pl` (pindel's T/N filtering script, requires `somatic.indel.filter.config`)
-4. Store files in separate directories by Case ID and chromosome
+**Required Files:**
+   - `parameters.config`
+   - `somatic_indelfilter.pl` (Pindel's T/N filtering script)
+   - `somatic.indel.filter.config`
+
+**Run:**
+1. Read configuration parameters from `parameters.config`.
+2. Execute Pindel for ITD detection.
+3. Apply `somatic_indelfilter.pl` to filter somatic indels.
+4. Store results in directories organized by Case ID and chromosome.
+
 ### run_scanITD.sh
-1. Read `parameters.config` (which includes basic paths and parameters)
-2. Execute ScanITD (`ScanITD.py`)
-3. Store files in separate directories by File ID and chromosome
+**Required Files:**
+   - `gencode.v36.annotation.gtf` (divided into 23 chromosomes)
+
+**Run:**
+1. Read configuration parameters from `parameters.config`.
+2. Execute ScanITD using `ScanITD.py`.
+3. Store results in directories organized by File ID and chromosome.
+
+## Filtering and Deduplication:
+
 ### filter_genomonITD.sh
-1. Read `parameters.config` (which includes basic paths and parameters)
-2. Filter ITD that length between 3 ~ 300
-3. Deduplicate same ITD that share the same Sample ID
+1. Read configuration parameters from `parameters.config`.
+2. Filter ITDs within length range 3 to 300 base pairs.
+3. Deduplicate ITDs sharing the same Sample ID.
+
 ### filter_pindel.sh
-1. Read `parameters.config` (which includes basic paths and parameters)
-2. Filter ITD that length between 3 ~ 300
-3. Deduplicate same ITD that share the same Case ID
+1. Read configuration parameters from `parameters.config`.
+2. Filter ITDs within length range 3 to 300 base pairs.
+3. Deduplicate ITDs sharing the same Case ID.
+
 ### filter_scanITD.sh
-1. Read `parameters.config` (which includes basic paths and parameters)
-2. Filter ITD that length between 3 ~ 300
-3. Deduplicate same ITD that share the same Sample ID
+1. Read configuration parameters from `parameters.config`.
+2. Filter ITDs within length range 3 to 300 base pairs.
+3. Deduplicate ITDs sharing the same Sample ID.
+
+## Merging ITD Results:
+
 ### merge_genomonITD.sh
-1. Read `parameters.config` (which includes basic paths and parameters)
-2. Merge files that share the same Sample ID
-3. Compare and Merge files that share the same Case ID
+1. Read configuration parameters from `parameters.config`.
+2. Merge results for ITDs sharing the same Sample ID.
+3. Compare and merge results for ITDs sharing the same Case ID.
+
 ### merge_pindel.sh
-1. Read `parameters.config` (which includes basic paths and parameters)
-2. Merge files that share the same Case ID
-### merge_scanITD.sh
-1. Read `parameters.config` (which includes basic paths and parameters)
-2. Merge files that share the same Sample ID
-3. Compare and Merge files that share the same Case ID
+1. Read configuration parameters from `parameters.config`.
+2. Merge results for ITDs sharing the same Sample ID.
+
+### erge_scanITD.sh
+1. Read configuration parameters from `parameters.config`.
+2. Merge results for ITDs sharing the same Sample ID.
+
+### merge_genomonITD_TN.sh
+1. Compare and merge tumor/normal ITD files for the same Case ID.
+
+### merge_scanITD_TN.sh
+1. Compare and merge tumor/normal ITD files for the same Case ID.
+
+### merge_all_caller.sh
+1. Output an ITD if it is detected by at least two of the three ITD callers (GenomonITD, Pindel, ScanITD).
