@@ -76,8 +76,8 @@ do
   done
   
   # If no overlap is found and the chromosomes matched, write the Tumor ITD to the output file
-  if [ "${overlap_found}" = false ]; then
-    echo "${tumor_line[@]}" >> ${output_file}
+  if [ "$overlap_found" = false ]; then
+    echo -e "$(IFS=$'\t'; echo "${tumor_line[*]}")" >> $output_file
   fi
 done < <(tail -n +1 ${Tumor_sample_file})
 

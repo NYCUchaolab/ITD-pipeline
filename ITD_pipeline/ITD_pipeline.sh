@@ -85,8 +85,8 @@ do
   bash ${filter_path}/merge_genomonITD.sh ${Normal_file_ID} ${Tumor_file_ID} ${Normal_sample_ID} ${Tumor_sample_ID} &  
   #
   bash ${filter_path}/merge_scanITD.sh ${Normal_file_ID} ${Tumor_file_ID} ${Normal_sample_ID} ${Tumor_sample_ID} &
-done
 wait
+done
 echo -e "$(date '+%Y-%m-%d %H:%M:%S')\tmerge Down"
 
 ############### run merge sample in single caller TN ###############
