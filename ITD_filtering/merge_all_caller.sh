@@ -34,8 +34,8 @@ declare -a all_itds
 
 read_pindel() {
     local file=${1}
-    echo "Processing pindel file: ${file}"
-    while IFS=$' ' read -r line; do
+    #echo "Processing pindel file: ${file}"
+    while IFS=$'\t' read -r line; do
         chr=$(echo "${line}" | awk '{print $1}')
         start=$(echo "${line}" | awk '{print $2}')
         SVLEN=$(echo "${line}" | grep -oP 'SVLEN=\K[0-9]+' || echo 0)
@@ -48,8 +48,8 @@ read_pindel() {
 
 read_genomon() {
     local file=${1}
-    echo "Processing genomonITD file: ${file}"
-    while IFS=$' ' read -r line; do
+    #echo "Processing genomonITD file: ${file}"
+    while IFS=$'\t' read -r line; do
         chr=$(echo "${line}" | awk '{print $8}')
         start=$(echo "${line}" | awk '{print $9}')
         end=$(echo "${line}" | awk '{print $10}')
@@ -61,8 +61,8 @@ read_genomon() {
 
 read_scanITD() {
     local file=${1}
-    echo "Processing scanITD file: ${file}"
-    while IFS=$' ' read -r line; do
+    #echo "Processing scanITD file: ${file}"
+    while IFS=$'\t' read -r line; do
         chr=$(echo "${line}" | awk '{print $1}')
         start=$(echo "${line}" | awk '{print $2}')
         SVLEN=$(echo "${line}" | grep -oP 'SVLEN=\K[0-9]+' || echo 0)

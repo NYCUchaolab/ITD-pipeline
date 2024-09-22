@@ -19,7 +19,7 @@ echo -e "$(date '+%Y-%m-%d %H:%M:%S')\tMake_config.sh Done"
 
 ############### run all caller ###############
 echo -e "$(date '+%Y-%m-%d %H:%M:%S')\tCalling Start"
-# 砞﹚程︽穨计秖
+#
 MAX_JOBS=14
 job_count=0
 for config_file in config/*.txt
@@ -31,19 +31,16 @@ do
   Tumor_sample_ID=$(awk 'NR==2{print $3}' $config_file)
   case_ID=$(echo ${Normal_sample_ID} | sed 's/_N//')
   sample_chr=$(echo "${Normal_file_ID}" | sed 's/.*\.//')
-
-  # 秨﹍磅︽3穨
+  #
   bash ${pipeline_path}/run_pindel.sh ${Normal_file_ID} ${Tumor_file_ID} ${case_ID} &
   bash ${pipeline_path}/run_genomonITD.sh ${Normal_file_ID} ${Tumor_file_ID} ${Normal_sample_ID} ${Tumor_sample_ID} &
   bash ${pipeline_path}/run_scanITD.sh ${Normal_file_ID} ${Tumor_file_ID} ${Normal_sample_ID} ${Tumor_sample_ID} &
-
-  # 糤穨计秖
+  #
   ((job_count++))
-  
-  # 讽笷程穨计秖单┮Τ穨ЧΘ
+  #
   if [ $job_count -ge $MAX_JOBS ]; then
     wait
-    job_count=0  # 竚穨璸计竟
+    job_count=0  
   fi
 done
 echo -e "$(date '+%Y-%m-%d %H:%M:%S')\tCalling Done"
@@ -113,11 +110,11 @@ echo -e "$(date '+%Y-%m-%d %H:%M:%S')\tmerge TN Done"
 ############### run merge sample in all caller ###############
 echo -e "$(date '+%Y-%m-%d %H:%M:%S')\t 3-2 caller Start"
 cd ${cwd}
-for genomonITD_Tumor_file in /genomon_ITD/*_T.itd.filter.de.tsv
+for genomonITD_Tumor_file in genomon_ITD/*_T.itd.filter.de.tsv
 do
   case_ID=$(basename ${genomonITD_Tumor_file} "_T.itd.filter.de.tsv")
   #
-  #bash ${filter_path}/merge_all_caller.sh ${case_ID} &
+  bash ${filter_path}/merge_all_caller.sh ${case_ID} &
 done
 wait
 echo -e "$(date '+%Y-%m-%d %H:%M:%S')\t 3-2 caller Done"
