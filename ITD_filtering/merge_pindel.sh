@@ -29,7 +29,11 @@ else
   mv "${sample_directory}/itd.filter.de.tsv" "${cwd}/pindel/${case_ID}.itd.filter.de.tsv"
 fi
 
-sort -u -o "${cwd}/pindel/${case_ID}.itd.filter.de.tsv" "${cwd}/pindel/${case_ID}.itd.filter.de.tsv"
+# Sort the file and filter unique rows based on the first two columns (chr and pos)
+sort -k1,1 -k2,2n "pindel/${sample_ID}.itd.filter.de.tsv" | awk '!seen[$1,$2]++' > "pindel/${sample_ID}.itd.filter.sorted.tsv"
+
+# Replace the original file with the sorted and filtered version
+mv "pindel/${sample_ID}.itd.filter.sorted.tsv" "pindel/${sample_ID}.itd.filter.de.tsv"
 
 # Clean up
 #rm -r ${sample_directory}

@@ -32,7 +32,11 @@ do
     mv "tmp/scanITD/${file_ID}/itd.filter.de.tsv" "scanITD/${sample_ID}.itd.filter.de.tsv"
   fi
   
-  sort -u -o "scanITD/${sample_ID}.itd.filter.de.tsv" "scanITD/${sample_ID}.itd.filter.de.tsv"
+  # Sort the file and filter unique rows based on the first two columns (chr and pos)
+  sort -k1,1 -k2,2n "scanITD/${sample_ID}.itd.filter.de.tsv" | awk '!seen[$1,$2]++' > "scanITD/${sample_ID}.itd.filter.sorted.tsv"
+  
+  # Replace the original file with the sorted and filtered version
+  mv "scanITD/${sample_ID}.itd.filter.sorted.tsv" "scanITD/${sample_ID}.itd.filter.de.tsv"
   
   # Clean up
   #rm -r "tmp/scanITD/${file_ID}/"
