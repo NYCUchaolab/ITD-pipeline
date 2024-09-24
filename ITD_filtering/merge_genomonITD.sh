@@ -38,7 +38,12 @@ do
     mv "tmp/genomon_ITD/${file_ID_change}/itd.filter.de.tsv" "genomon_ITD/${sample_ID}.itd.filter.de.tsv"
   fi
   
-  sort -u -o "genomon_ITD/${sample_ID}.itd.filter.de.tsv" "genomon_ITD/${sample_ID}.itd.filter.de.tsv"
+  # Sort the file and filter unique rows based on the first two columns (chr and pos)
+  sort -k1,1 -k2,2n "genomon_ITD/${sample_ID}.itd.filter.de.tsv" | awk '!seen[$1,$2]++' > "genomon_ITD/${sample_ID}.itd.filter.sorted.tsv"
+  
+  # Replace the original file with the sorted and filtered version
+  mv "genomon_ITD/${sample_ID}.itd.filter.sorted.tsv" "genomon_ITD/${sample_ID}.itd.filter.de.tsv"
+
   
   # Clean up
   #rm -r tmp/genomon_ITD/${file_ID}/
