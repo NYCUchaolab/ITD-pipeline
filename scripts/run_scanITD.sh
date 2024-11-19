@@ -106,17 +106,28 @@ for partition in ${partition_array[@]}; do
   # log 1 << '#__COMMENT__OUT__'
   (
     # Execute the python script
-    python ${SCANITD_DIR}/ScanITD.py \
-      -i $PREFIX/$SAMPLE_ID.$partition.bam \
-      -r $GENOME_REF \
-      -o $OUT_DIR/$partition \
-      -t $bed_file \
-      -l 3 -f 0 -c 3
+    if [ -f "${OUT_DIR}/${partition}.itd.vcf" ]; then
+    log 1 "${OUT_DIR}/${partition}.itd.vcf existed !!"
+    log 1 "Skip calling ${SAMPLE_ID} ITD in ${partition} with ScanITD...}"
+    log 1 ""
 
-    # Remove the input file after the job is done
-    rm -f $PREFIX/$SAMPLE_ID.$partition.bam
-    rm -f $PREFIX/$SAMPLE_ID.$partition.bai
-    log 1 "Removed input file: $PREFIX/$SAMPLE_ID.$partition.bam"
+    else 
+      log 1 "Calling ${SAMPLE_ID} ITD in ${partition} with ScanITD...}"
+      python ${SCANITD_DIR}/ScanITD.py \
+        -i $OUT_DIR/$SAMPLE_ID.$partition.bam \
+        -r $GENOME_REF \
+        -o $OUT_DIR/$partition \
+        -t $bed_file \
+        -l 3 -f 0 -c 3
+      
+      log 1 "Done calling ${SAMPLE_ID} ITD in ${partition} !!"
+
+      # Remove the input file after the job is done
+      rm -f $OUT_DIR/$SAMPLE_ID.$partition.bam
+      rm -f $OUT_DIR/$SAMPLE_ID.$partition.bai
+      log 1 "Removed input file: $OUT_DIR/$SAMPLE_ID.$partition.bam"
+      log 1 ""
+    fi  
   ) &
     # -l: minimal ITD length to report, -f: minimal VAF, -c: mininal ovservation count 
   #__COMMENT__OUT__
