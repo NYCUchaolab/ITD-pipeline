@@ -66,6 +66,14 @@ log 1 "Sample BAM File  : ${SAMPLE_BAM}"
 log 1 "Output Directory : ${OUT_DIR}"
 log 1 ""
 
+if [ -f $OUT_DIR/itd_list.tsv ]; then
+  log 1 "${OUT_DIR}/itd_list.tsv existed !!"
+  log 1 "Skip calling ${SAMPLE_ID} ITD in ${partition} with Genomon-ITDetector...}"
+  log 1 ""
+  
+  exit 0
+fi
+
 SAMPLE_ID=$(basename "$SAMPLE_BAM" .bam)
 
 if [[ ! -d "${OUT_DIR}" ]]; then
