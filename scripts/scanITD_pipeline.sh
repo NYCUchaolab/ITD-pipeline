@@ -97,13 +97,12 @@ log 1 ""
 #   -s $SCANITD_SLICE_CHROM
 
 sbatch ${PIPELINE_DIR}/scripts/run_scanITD.sh -v $VERBOSE \
-  -f ${TUMOR_SAMPLE} \
+  -f $TUMOR_SAMPLE \
   -o $TUMOR_DIR \
   -s $SCANITD_SLICE_CHROM &
 
 sbatch ${PIPELINE_DIR}/scripts/run_scanITD.sh -v $VERBOSE \
-  -i $NORMAL_DIR \
+  -f $NORMAL_SAMPLE \
   -o $NORMAL_DIR \
-  -S $NORMAL_ID \
   -s $SCANITD_SLICE_CHROM &
 
