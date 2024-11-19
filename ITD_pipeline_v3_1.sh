@@ -80,13 +80,13 @@ check_dir_existence "cache" $CACHE_DIR
 log 1 ""
 
 # Create required subdirectories in OUT_DIR
-for dir in "genomonITD" "pindel" "scanITD"; do
-  check_and_create_dir $OUT_DIR $dir
-done
-log 1 ""
+# for dir in "genomonITD" "pindel" "scanITD"; do
+#   check_and_create_dir $OUT_DIR $dir
+# done
+# log 1 ""
 
 # Create required subdirectories in CACHE_DIR
-for dir in "tmp/genomonITD" "tmp/pindel" "tmp/scanITD"; do
+for dir in "raw_data/genomonITD" "raw_data/pindel" "raw_data/scanITD"; do
   check_and_create_dir $CACHE_DIR $dir
 done
 log 1 ""
@@ -134,27 +134,27 @@ log 1 "normal BAM file  : $NORMAL_BAM"
 log 1 ""
 
 # step 1: pindel calling
-# bash $PIPELINE_DIR/scripts/pindel_pipeline.sh -v $VERBOSE \
-#   -s $Case_ID \
-#   -t $TUMOR_BAM \
-#   -n $NORMAL_BAM \
-#   -o $CACHE_DIR/tmp/pindel &
+bash $PIPELINE_DIR/scripts/pindel_pipeline.sh -v $VERBOSE \
+  -s $Case_ID \
+  -t $TUMOR_BAM \
+  -n $NORMAL_BAM \
+  -o $CACHE_DIR/raw_data/pindel &
  
 # step 2: scanITD calling
-# bash $PIPELINE_DIR/scripts/scanITD_pipeline.sh -v $VERBOSE \
-#   -s $Case_ID \
-#   -t $TUMOR_BAM \
-#   -n $NORMAL_BAM \
-#   -o $CACHE_DIR/tmp/scanITD &
+bash $PIPELINE_DIR/scripts/scanITD_pipeline.sh -v $VERBOSE \
+  -s $Case_ID \
+  -t $TUMOR_BAM \
+  -n $NORMAL_BAM \
+  -o $CACHE_DIR/raw_data/scanITD &
 
 # step 3: genomon-ITDetector
 sbatch $PIPELINE_DIR/scripts/run_genomonITD.sh -v $VERBOSE \
   -f $TUMOR_BAM \
-  -o $CACHE_DIR/tmp/genomonITD/${Tumor_fileID} &
+  -o $CACHE_DIR/raw_data/genomonITD/${Tumor_fileID} &
   
 sbatch $PIPELINE_DIR/scripts/run_genomonITD.sh -v $VERBOSE \
   -f $NORMAL_BAM \
-  -o $CACHE_DIR/tmp/genomonITD/${Normal_fileID} &
+  -o $CACHE_DIR/raw_data/genomonITD/${Normal_fileID} &
 
 # ================================================================ #
 # Section 3: ITD Merging (2-caller)                                #
