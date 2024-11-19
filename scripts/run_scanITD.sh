@@ -20,9 +20,8 @@ source $TOOLS
 
 VERSION=0.1.1
 VERBOSE=0
-PREFIX=.
 SAMPLE_ID=SAMPLE
-OUT_DIR=$PREFIX
+OUT_DIR=.
 
 usage(){
 >&2 cat << EOF
@@ -30,14 +29,13 @@ Usage: $0
   [ -V | --version ]
   [ -v | --verbose args; default=0 ]
   [ -h | --help ]
-  [ -i | --input_dir args; default=. ]
+  [ -f | --file args ]
   [ -o | --out_dir args; default=. ]
-  [ -S | --sample_id args; default=SAMPLE ]
   [ -s | --slice_file args ]
 EOF
 }
 
-args=$(getopt -a -o Vv:hi:S:s:o: --long version,verbose:,help,input_dir:,out_dir:,slice_file:,sample_id: -- "$@")
+args=$(getopt -a -o Vv:hf:s:o: --long version,verbose:,help,file:,out_dir:,slice_file: -- "$@")
 
 eval set -- ${args}
 while :
@@ -46,9 +44,8 @@ do
     -V | --version)        echo $VERSION ; exit 1;;
     -v | --verbose)        VERBOSE=$2 ; shift 2;;
     -h | --help)           usage ; exit 1;;
-    -i | --input_dir)      PREFIX=$2 ; shift 2;;
+    -f | --file)           FILE_NAME=$2 ; shift 2;;
     -o | --out_dir)        OUT_DIR=$2   ; shift 2;;
-    -S | --sample_id)      SAMPLE_ID=$2 ; shift 2;;
     -s | --slice_file)     SLICE_CHROM_DB=$2; shift 2;;
 
     # -- means the end of the arguments; drop this, and break out of the while loop
@@ -62,13 +59,16 @@ done
 
 # check_essential_option "config_file" $CONFIG_FILE
 
-check_dir_existence "input" $PREFIX
+check_essential_option "file" $FILE_NAME
+
+check_file_existence "sample BAM" $FILE_NAME
 check_dir_existence "output" $OUT_DIR
 check_file_existence "slice configuration" $SLICE_CHROM_DB
 
+SAMPLE_ID=$(basename "$FILE_NAME" .bam)
 
 log 1 "Version          : ${VERSION}"
-log 1 "Sample Directory : ${PREFIX}"
+log 1 "Sample BAM File  : ${FILE_NAME}"
 log 1 "Output Directory : ${OUT_DIR}"
 log 1 "Sample Case ID   : ${SAMPLE_ID}"
 log 1 "Slicing Configuration File : ${SLICE_CHROM_DB}"
@@ -78,6 +78,11 @@ eval "$(conda shell.bash hook)"
 conda activate $SCANITD_ENV
 
 declare -A partition_array
+
+bash ${PIPELINE_DIR}/utility/slice_bam.sh -v $VERBOSE \
+  -f $FILE_NAME \
+  -o $OUT_DIR \
+  -s $SCANITD_SLICE_CHROM
 
 # reading slicing chromosome information
 for partition in $(awk -F= '{print $1}' "$SLICE_CHROM_DB"); do
