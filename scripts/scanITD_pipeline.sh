@@ -78,11 +78,11 @@ log 1 ""
 check_and_create_dir ${OUT_DIR} ${NORMAL_ID}
 log 1 ""
 
-SAMPLE_DIR=${OUT_DIR}/${TUMOR_ID}_${NORMAL_ID}
-if [[ ! -d "${SAMPLE_DIR}" ]]; then
-  log 1 "Creating Sample Directory at ${SAMPLE_DIR}"
-  mkdir -p "${SAMPLE_DIR}"
-fi
+# SAMPLE_DIR=${OUT_DIR}/${TUMOR_ID}_${NORMAL_ID}
+# if [[ ! -d "${SAMPLE_DIR}" ]]; then
+#   log 1 "Creating Sample Directory at ${SAMPLE_DIR}"
+#   mkdir -p "${SAMPLE_DIR}"
+# fi
 
 # step 1: BAM slicing
 
