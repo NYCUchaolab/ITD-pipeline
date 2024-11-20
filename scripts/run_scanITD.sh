@@ -107,9 +107,17 @@ for partition in ${partition_array[@]}; do
   (
     # Execute the python script
     if [ -f "${OUT_DIR}/${partition}.itd.vcf" ]; then
-    log 1 "${OUT_DIR}/${partition}.itd.vcf existed !!"
-    log 1 "Skip calling ${SAMPLE_ID} ITD in ${partition} with ScanITD...}"
-    log 1 ""
+      log 1 "${OUT_DIR}/${partition}.itd.vcf existed !!"
+      log 1 "Skip calling ${SAMPLE_ID} ITD in ${partition} with ScanITD..."
+      log 1 ""
+
+      if [ -f "$OUT_DIR/$SAMPLE_ID.$partition.bam"]; then
+        rm -f $OUT_DIR/$SAMPLE_ID.$partition.bam
+      fi
+
+      if [ -f "$OUT_DIR/$SAMPLE_ID.$partition.bai"]; then
+        rm -f $OUT_DIR/$SAMPLE_ID.$partition.bai
+      fi
 
     else 
       log 1 "Calling ${SAMPLE_ID} ITD in ${partition} with ScanITD...}"
