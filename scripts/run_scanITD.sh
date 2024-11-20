@@ -111,11 +111,11 @@ for partition in ${partition_array[@]}; do
       log 1 "Skip calling ${SAMPLE_ID} ITD in ${partition} with ScanITD..."
       log 1 ""
 
-      if [ -f "$OUT_DIR/$SAMPLE_ID.$partition.bam"]; then
+      if [ -f "$OUT_DIR/$SAMPLE_ID.$partition.bam" ]; then
         rm -f $OUT_DIR/$SAMPLE_ID.$partition.bam
       fi
 
-      if [ -f "$OUT_DIR/$SAMPLE_ID.$partition.bai"]; then
+      if [ -f "$OUT_DIR/$SAMPLE_ID.$partition.bai" ]; then
         rm -f $OUT_DIR/$SAMPLE_ID.$partition.bai
       fi
 

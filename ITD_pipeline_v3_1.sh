@@ -141,20 +141,20 @@ log 1 ""
 #   -o $CACHE_DIR/raw_data/pindel &
  
 # step 2: scanITD calling
-bash $PIPELINE_DIR/scripts/scanITD_pipeline.sh -v $VERBOSE \
-  -s $Case_ID \
-  -t $TUMOR_BAM \
-  -n $NORMAL_BAM \
-  -o $CACHE_DIR/raw_data/scanITD &
+# bash $PIPELINE_DIR/scripts/scanITD_pipeline.sh -v $VERBOSE \
+#   -s $Case_ID \
+#   -t $TUMOR_BAM \
+#   -n $NORMAL_BAM \
+#   -o $CACHE_DIR/raw_data/scanITD &
 
 # step 3: genomon-ITDetector
-# sbatch $PIPELINE_DIR/scripts/run_genomonITD.sh -v $VERBOSE \
-#   -f $TUMOR_BAM \
-#   -o $CACHE_DIR/raw_data/genomonITD/${Tumor_fileID} &
+sbatch $PIPELINE_DIR/scripts/run_genomonITD.sh -v $VERBOSE \
+  -f $TUMOR_BAM \
+  -o $CACHE_DIR/raw_data/genomonITD/${Tumor_fileID} &
   
-# sbatch $PIPELINE_DIR/scripts/run_genomonITD.sh -v $VERBOSE \
-#   -f $NORMAL_BAM \
-#   -o $CACHE_DIR/raw_data/genomonITD/${Normal_fileID} &
+sbatch $PIPELINE_DIR/scripts/run_genomonITD.sh -v $VERBOSE \
+  -f $NORMAL_BAM \
+  -o $CACHE_DIR/raw_data/genomonITD/${Normal_fileID} &
 
 # ================================================================ #
 # Section 3: ITD Merging (2-caller)                                #
