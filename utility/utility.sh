@@ -101,3 +101,17 @@ check_variables_set() {
   fi
 }
 
+check_bai_existence() {
+  local file_name=$1
+  parent_dir=$(dirname "${file_name}")
+  base_name=$(basename ${file_name} .bam )
+  if [ ! -f "$parent_dir/${base_name}.bai" ]; then
+    conda activate $SAMTOOLS_ENV
+    log 1 "Creating index file for ${base_name}.bam"
+    samtools index $file_name
+    mv ${parent_dir}/${base_name}.bam.bai ${parent_dir}/${base_name}.bai 
+    log 1 "Done indexing"
+    log 1 ""
+    conda deactivate
+  fi  
+}

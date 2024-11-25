@@ -15,6 +15,9 @@ parse_sample_sheet() {
         if [[ $sampleType =~ "tumor" ]]; then
             log 1 "Detected Tumor sample: $sampleID"
             Tumor_fileID="$fileID"
+        elif [[ $sampleType =~ "Blood Derived Cancer" ]]; then
+            log 1 "Detected Tumor sample: $sampleID"
+            Tumor_fileID="$fileID"
         elif [[ $sampleType =~ "normal" ]]; then
             log 1 "Detected Normal sample: $sampleID"
             Normal_fileID="$fileID"
