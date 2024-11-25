@@ -104,12 +104,7 @@ bash ${PIPELINE_DIR}/utility/slice_bam.sh -v $VERBOSE \
 CONFIG_DIR=${SAMPLE_DIR}/config
 check_and_create_dir ${SAMPLE_DIR} config
 
-declare -a partition_array
-
-# Use a loop to store the result into an array
-while read -r partition; do
-    partition_array+=("$partition")
-done < <(awk -F= '{print $1}' $PINDEL_SLICE_CHROM)
+ 
 
 echo "Partitions: ${partition_array[@]}"
 
