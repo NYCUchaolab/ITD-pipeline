@@ -95,3 +95,7 @@ check_dir_existence "GenomonITD: ${Normal_fileID}" $DIRECTORY/raw_data/genomonIT
 
 check_file_existence "GenomonITD: $Tumor_fileID result" $DIRECTORY/raw_data/genomonITD/${Tumor_fileID}/itd_list.tsv
 check_file_existence "GenomonITD: $Normal_fileID result" $DIRECTORY/raw_data/genomonITD/${Normal_fileID}/itd_list.tsv
+
+log 1 "$Tumor_fileID Successed"
+log 1 "$Normal_fileID Successed" 
+log 1 ""
