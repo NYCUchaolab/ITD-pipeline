@@ -9,7 +9,10 @@ shopt -s expand_aliases
 source $ITD_PIPELINE_CONFIG
 source $BANNER_SH
 source $TOOLS
-source $CHECK_SCRIPT
+source $READ_SAMPLE_SHEET
+
+VERSION=0.1.2
+VERBOSE=0
 
 eval "$(conda shell.bash hook)"
 

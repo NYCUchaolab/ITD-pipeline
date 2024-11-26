@@ -117,7 +117,7 @@ shopt -s nocasematch
 # ================================================================ #
 
 parse_sample_sheet $SAMPLE_SHEET
-check_variables_set Case_ID Tumor_fileID Normal_fileID Tumor_fileID
+check_variables_set Case_ID Tumor_fileID Normal_fileID
 
 # ================================================================ #
 # Section 2: ITD Calling                                           #
@@ -138,6 +138,7 @@ check_bai_existence "${NORMAL_BAM}"
 
 
 # step 1: pindel calling
+
 bash $PIPELINE_DIR/scripts/pindel_pipeline.sh -v $VERBOSE \
   -s $Case_ID \
   -t $TUMOR_BAM \
