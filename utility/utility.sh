@@ -116,7 +116,7 @@ check_bai_existence() {
   fi  
 }
 
-cleanup() {
+counter_lock_cleanup() {
   check_variables_set LOCKFILE
   if [[ -e $LOCKFILE ]]; then
     exec 200<> $LOCKFILE
@@ -136,4 +136,13 @@ cleanup() {
   fi
 
   exit 
+}
+
+exit_lock_cleanup() {
+  check_variables_set LOCKFILE
+  if [[ -e $LOCKFILE ]]; then
+    rm -f "$LOCKFILE"
+    log 1 "Released lock and removed lockfile: $LOCKFILE"
+    log 1 ""
+  fi
 }

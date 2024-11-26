@@ -68,9 +68,32 @@ log 1 ""
 
 SAMPLE_ID=$(basename "$SAMPLE_BAM" .bam)
 
-# FIXME: [ ] in addition of itd_list checking, adding lock file check
-# |-> [ ] if lock file not exist create a lock file
-# |-> [ ] if lokc file exist end program
+
+
+# [X] in addition of itd_list checking, adding lock file check
+# |-> [X] if lock file not exist create a lock file
+# |-> [X] if lokc file exist end program
+
+if [[ ! -d "${OUT_DIR}" ]]; then
+  log 1 "Creating Sample Directory at ${OUT_DIR}"
+  mkdir -p "${OUT_DIR}"
+  log 1 "Done Creating Sample Directory !"
+  log 1 ""
+fi
+
+LOCKFILE="$OUT_DIR/genomonITD_${SAMPLE_ID}.lock"
+
+if ! (set -o noclobber; echo "$$" > $LOCKFILE) 2>/dev/null; then
+    log 0 "Lock file exists. Another instance might be running. Exiting program."
+    log 0 ""
+    exit 3 
+else
+  log 1 "Created Lock file: ${LOCKFILE}"
+  log 1 ""
+fi
+
+# [X] remove lock file
+trap exit_lock_cleanup INT TERM EXIT
 
 if [ -f $OUT_DIR/itd_list.tsv ]; then
   log 1 "${OUT_DIR}/itd_list.tsv existed !!"
@@ -81,12 +104,7 @@ if [ -f $OUT_DIR/itd_list.tsv ]; then
 fi
 
 
-if [[ ! -d "${OUT_DIR}" ]]; then
-  log 1 "Creating Sample Directory at ${OUT_DIR}"
-  mkdir -p "${OUT_DIR}"
-  log 1 "Done Creating Sample Directory !"
-  log 1 ""
-fi
+
 
 PARENT_DIR=$(dirname "${OUT_DIR}")
 TMP_DIR=$(mktemp -d "${PARENT_DIR}/tmp_XXXXXX")
@@ -114,4 +132,3 @@ rmdir  $TMP_DIR
 cd $WORK_DIR
 conda deactivate
 
-# FIXME: [ ] remove lock file

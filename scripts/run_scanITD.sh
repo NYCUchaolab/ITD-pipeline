@@ -81,15 +81,19 @@ conda activate $SCANITD_ENV
 # |-> [X] if lock file not exist: create a lock file
 # |-> [X] if lock file exist: end program
 
-LOCKFILE="$OUT_DIR/lockfile_${SAMPLE_ID}.lock"
+LOCKFILE="$OUT_DIR/scanITD_${SAMPLE_ID}.lock"
 
 if ! (set -o noclobber; echo "$$" > $LOCKFILE) 2>/dev/null; then
-    log 1 "Lock file exists. Another instance might be running. Exiting program."
-    exit 3 
+  log 0 "Lock file exists. Another instance might be running. Exiting program."
+  log 0 ""
+  exit 3 
+else
+  log 1 "Created Lock file: ${LOCKFILE}"
+  log 1 ""
 fi
 
 # [X] remove lock file
-trap 'rm -f "$LOCKFILE"' INT TERM EXIT
+trap exit_lock_cleanup INT TERM EXIT
 
 declare -A partition_array 
 
