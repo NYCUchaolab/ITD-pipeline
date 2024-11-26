@@ -77,6 +77,10 @@ log 1 ""
 eval "$(conda shell.bash hook)"
 conda activate $SCANITD_ENV
 
+# FIXME: [ ] create a lock file if not exist
+# |-> if lock file not exist: create a lock file
+# |-> if lock file exist: end program
+
 declare -A partition_array
 
 bash ${PIPELINE_DIR}/utility/slice_bam.sh -v $VERBOSE \
@@ -101,6 +105,7 @@ for partition in ${partition_array[@]}; do
   log 1 "running scanITD on $SAMPLE_ID:  $partition"
   log 1 "bed file: ${bed_file}"
   log 1 ""
+
 
 
   # log 1 << '#__COMMENT__OUT__'
@@ -146,7 +151,7 @@ log 1 ""
 
 
 
-
+# FIXME: [ ] remove lock file
 
 log 1 "${SAMPLE_ID} Done !!"
 log 1 ""

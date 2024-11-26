@@ -85,6 +85,10 @@ SAMPLE_DIR=${OUT_DIR}/${TUMOR_ID}_${NORMAL_ID}
 check_and_create_dir ${OUT_DIR} ${TUMOR_ID}_${NORMAL_ID}
 log 1 ""
 
+# FIXME: [ ] add a writing lock for  dir, T_dir and N_dir:
+# |-> [ ] if exist: wait writing lock removed
+# |-> [ ] else: create a writing lock and write file
+
 # step 1: BAM slicing
 
 bash ${PIPELINE_DIR}/utility/slice_bam.sh -v $VERBOSE \
@@ -92,19 +96,25 @@ bash ${PIPELINE_DIR}/utility/slice_bam.sh -v $VERBOSE \
   -o $TUMOR_DIR \
   -s $PINDEL_SLICE_CHROM
 
+
 bash ${PIPELINE_DIR}/utility/slice_bam.sh -v $VERBOSE \
   -f ${NORMAL_SAMPLE} \
   -o $NORMAL_DIR \
   -s $PINDEL_SLICE_CHROM
 
+# FIXME: [ ] remove writign lock after complete
+# |-> [ ] remove writing lock if self create it
+# |-> [ ] continue code after writing lock is removed 
+
 # step 2: create Pindel Config File
 
 # conda activate $PINDEL_ENV
 
+
 CONFIG_DIR=${SAMPLE_DIR}/config
 check_and_create_dir ${SAMPLE_DIR} config
 
- 
+
 
 echo "Partitions: ${partition_array[@]}"
 
@@ -133,3 +143,5 @@ for partition in ${partition_array[@]}; do
     -o $SAMPLE_DIR/$partition / 
   
 done
+
+

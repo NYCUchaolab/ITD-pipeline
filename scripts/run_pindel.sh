@@ -79,6 +79,10 @@ conda activate $PINDEL_ENV
 
 CWD=$(pwd)
 
+# FIXME: [ ] create p1, p2 specific counter lock
+# |-> [ ] check counter lock existence and create if not created
+# |-> [ ] increment counter if counter lock existed
+
 # : << '#__COMMENT__OUT__'
 pindel -f $GENOME_REF -i ${CONFIG_FILE} -o ${OUT_DIR}/${SAMPLE_ID} -T ${THREAD} > ${OUT_DIR}/${SAMPLE_ID}.log 2>&1
 #__COMMENT__OUT__
@@ -122,6 +126,9 @@ for file_path in $(awk -F'\t' '{print $1}' "$CONFIG_FILE"); do
     log 1 ""
 done
 
+# FIXME: [ ] remove / decrement counter lock
+# |-> [ ] remove couter lock if decrement to zero, and remove file
+# |-> [ ] decrement if counter is not zero, and pass
 
 log 1 "Done ${SAMPLE_ID} Pindel ITD calling !!"
 log 1 ""

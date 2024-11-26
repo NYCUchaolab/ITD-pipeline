@@ -68,6 +68,10 @@ log 1 ""
 
 SAMPLE_ID=$(basename "$SAMPLE_BAM" .bam)
 
+# FIXME: [ ] in addition of itd_list checking, adding lock file check
+# |-> [ ] if lock file not exist create a lock file
+# |-> [ ] if lokc file exist end program
+
 if [ -f $OUT_DIR/itd_list.tsv ]; then
   log 1 "${OUT_DIR}/itd_list.tsv existed !!"
   log 1 "Skip calling ${SAMPLE_ID} ITD in ${partition} with Genomon-ITDetector...}"
@@ -75,7 +79,6 @@ if [ -f $OUT_DIR/itd_list.tsv ]; then
   
   exit 0
 fi
-
 
 
 if [[ ! -d "${OUT_DIR}" ]]; then
@@ -111,3 +114,4 @@ rmdir  $TMP_DIR
 cd $WORK_DIR
 conda deactivate
 
+# FIXME: [ ] remove lock file
