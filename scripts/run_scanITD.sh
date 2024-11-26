@@ -77,13 +77,21 @@ log 1 ""
 eval "$(conda shell.bash hook)"
 conda activate $SCANITD_ENV
 
-# FIXME: [ ] create a lock file if not exist
-# |-> if lock file not exist: create a lock file
-# |-> if lock file exist: end program
+# [X] create a lock file if not exist
+# |-> [X] if lock file not exist: create a lock file
+# |-> [X] if lock file exist: end program
 
+LOCKFILE="$OUT_DIR/lockfile_${SAMPLE_ID}.lock"
 
+if ! (set -o noclobber; echo "$$" > $LOCKFILE) 2>/dev/null; then
+    log 1 "Lock file exists. Another instance might be running. Exiting program."
+    exit 3 
+fi
 
-declare -A partition_array
+# [X] remove lock file
+trap 'rm -f "$LOCKFILE"' INT TERM EXIT
+
+declare -A partition_array 
 
 bash ${PIPELINE_DIR}/utility/slice_bam.sh -v $VERBOSE \
   -f $FILE_NAME \
@@ -153,7 +161,6 @@ log 1 ""
 
 
 
-# FIXME: [ ] remove lock file
 
 log 1 "${SAMPLE_ID} Done !!"
 log 1 ""
