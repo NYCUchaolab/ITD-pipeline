@@ -81,6 +81,8 @@ conda activate $SCANITD_ENV
 # |-> if lock file not exist: create a lock file
 # |-> if lock file exist: end program
 
+
+
 declare -A partition_array
 
 bash ${PIPELINE_DIR}/utility/slice_bam.sh -v $VERBOSE \

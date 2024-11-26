@@ -115,3 +115,25 @@ check_bai_existence() {
     conda deactivate
   fi  
 }
+
+cleanup() {
+  check_variables_set LOCKFILE
+  if [[ -e $LOCKFILE ]]; then
+    exec 200<> $LOCKFILE
+
+    flock -x 200
+
+    REFCOUNT=$(<$LOCKFILE)
+    ((REFCOUNT--))
+
+    echo "${REFCOUNT}" > $LOCKFILE
+
+    if [[$REFCOUNT -eq 0 ]]; then
+      rm -f $LOCKFILE
+    fi
+
+    flock -u 200
+  fi
+
+  exit 
+}
