@@ -85,26 +85,57 @@ SAMPLE_DIR=${OUT_DIR}/${TUMOR_ID}_${NORMAL_ID}
 check_and_create_dir ${OUT_DIR} ${TUMOR_ID}_${NORMAL_ID}
 log 1 ""
 
-# FIXME: [ ] add a writing lock for  dir, T_dir and N_dir:
-# |-> [ ] if exist: wait writing lock removed
-# |-> [ ] else: create a writing lock and write file
+# [X] add a writing lock for  dir, T_dir and N_dir:
+# |-> [X] if exist: wait writing lock removed
+# |-> [X] else: create a writing lock and write file
+
+T_LOCKFILE="$OUT_DIR/$TUMOR_ID/pindel_${SAMPLE_ID}.lock"
+N_LOCKFILE="$OUT_DIR/$NORMAL_ID/pindel_${SAMPLE_ID}.lock"
 
 # step 1: BAM slicing
+if [ -f $T_LOCKFILE ]; then
+  while [ -f "$T_LOCKFILE" ]; do
+    log 1 "Lockfile exists: $T_LOCKFILE. Waiting..."
+    sleep 1
+  done
+else
+  echo "$$" > "$T_LOCKFILE"
+  log 1 "Acquired lock: $T_LOCKFILE"
+  trap "wait_lock_cleanup $T_LOCKFILE" INT TERM EXIT
 
-bash ${PIPELINE_DIR}/utility/slice_bam.sh -v $VERBOSE \
-  -f ${TUMOR_SAMPLE} \
-  -o $TUMOR_DIR \
-  -s $PINDEL_SLICE_CHROM
+  bash ${PIPELINE_DIR}/utility/slice_bam.sh -v $VERBOSE \
+    -f ${TUMOR_SAMPLE} \
+    -o $TUMOR_DIR \
+    -s $PINDEL_SLICE_CHROM
+  
+  wait_lock_cleanup $T_LOCKFILE
+fi
+
+# step 1: BAM slicing
+if [ -f $N_LOCKFILE ]; then
+  while [ -f "$N_LOCKFILE" ]; do
+    log 1 "Lockfile exists: $N_LOCKFILE. Waiting..."
+    sleep 1
+  done
+else
+  echo "$$" > "$N_LOCKFILE"
+  log 1 "Acquired lock: $N_LOCKFILE"
+  trap "wait_lock_cleanup $N_LOCKFILE" INT TERM EXIT
+
+  bash ${PIPELINE_DIR}/utility/slice_bam.sh -v $VERBOSE \
+    -f ${NORMAL_SAMPLE} \
+    -o $NORMAL_DIR \
+    -s $PINDEL_SLICE_CHROM
+  
+  wait_lock_cleanup $N_LOCKFILE
+fi
+
+trap - INT TERM EXIT
 
 
-bash ${PIPELINE_DIR}/utility/slice_bam.sh -v $VERBOSE \
-  -f ${NORMAL_SAMPLE} \
-  -o $NORMAL_DIR \
-  -s $PINDEL_SLICE_CHROM
-
-# FIXME: [ ] remove writign lock after complete
-# |-> [ ] remove writing lock if self create it
-# |-> [ ] continue code after writing lock is removed 
+# [X] remove writign lock after complete
+# |-> [X] remove writing lock if self create it
+# |-> [X] continue code after writing lock is removed 
 
 # step 2: create Pindel Config File
 
@@ -114,7 +145,11 @@ bash ${PIPELINE_DIR}/utility/slice_bam.sh -v $VERBOSE \
 CONFIG_DIR=${SAMPLE_DIR}/config
 check_and_create_dir ${SAMPLE_DIR} config
 
+declare -A partition_array 
 
+for partition in $(awk -F= '{print $1}' "$PINDEL_SLICE_CHROM"); do
+    partition_array["$partition"]=$partition
+done
 
 echo "Partitions: ${partition_array[@]}"
 

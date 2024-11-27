@@ -146,3 +146,41 @@ exit_lock_cleanup() {
     log 1 ""
   fi
 }
+
+wait_lock_cleanup() {
+  local lockfile=$1
+  check_variables_set lockfile
+  if [ -f "$lockfile" ] && [ "$(cat "$lockfile")" = "$$" ]; then
+    rm -f "$lockfile"
+    log 1 "Released lock and removed lockfile: $lockfile"
+    log 1 ""
+  fi
+}
+
+acquire_counter_lock() {
+  local lockfile=$1
+  # log 1 $lockfile
+  if [ ! -f $lockfile ]; then
+    # log 1 $lockfile
+    echo 1 > $lockfile
+    log 1 "Lockfile created: $lockfile"
+  else
+    count=$(cat "$lockfile")
+    echo $((count + 1)) > "$lockfile"
+    log 1 "Lockfile updated: $lockfile (count = $((count + 1)))"
+  fi
+}
+
+release_counter_lock() {
+  local lockfile=$1
+  if [ -f $lockfile ]; then
+    count=$(cat $lockfile)
+    if [ "$count" -le 1 ]; then
+      rm -f "$lockfile"
+      log 1 "Lockfile removed: $lockfile"
+    else
+      echo $((count - 1)) > "$lockfile"
+      log 1 "Lockfile updated: $lockfile (count = $((count - 1)))"
+    fi
+  fi
+}

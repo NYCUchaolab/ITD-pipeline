@@ -97,7 +97,7 @@ trap exit_lock_cleanup INT TERM EXIT
 
 if [ -f $OUT_DIR/itd_list.tsv ]; then
   log 1 "${OUT_DIR}/itd_list.tsv existed !!"
-  log 1 "Skip calling ${SAMPLE_ID} ITD in ${partition} with Genomon-ITDetector...}"
+  log 1 "Skip calling ${SAMPLE_ID} ITD with Genomon-ITDetector...}"
   log 1 ""
   
   exit 0
