@@ -1,5 +1,5 @@
 # ITD Pipeline
-<img src="https://github.com/NYCUchaolab/ITD-pipeline/blob/main/ITD-pipeline.png" width="1000" height="265">
+<img width="1031" alt="截圖 2024-11-27 晚上11 49 37" src="https://github.com/user-attachments/assets/d2a790a7-d5cb-4a91-8a29-2134de29fa5e" width="1000" height="265">
 
 ## ITD_pipeline.sh
 1. Slice BAM files by chromosome using `Slice_bam.sh` (Chromosomes 1, 2, 3, and 7 will be further divided into p and q arms)
