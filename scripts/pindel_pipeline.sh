@@ -133,6 +133,7 @@ fi
 trap - INT TERM EXIT
 
 
+
 # [X] remove writign lock after complete
 # |-> [X] remove writing lock if self create it
 # |-> [X] continue code after writing lock is removed 
@@ -169,6 +170,9 @@ for partition in ${partition_array[@]}; do
   check_file_existence "pindel configuration" $CONFIG_FILE
 
   check_and_create_dir $SAMPLE_DIR $partition
+
+  acquire_counter_lock $OUT_DIR/$TUMOR_ID/$partition.lock
+  acquire_counter_lock $OUT_DIR/$NORMAL_ID/$partition.lock
 
   # pindel calling
   sbatch ${PIPELINE_DIR}/scripts/run_pindel.sh -v $VERBOSE \

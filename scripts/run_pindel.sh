@@ -97,22 +97,16 @@ log 1 "$partition"
 log 1 ""
 
 # log 1 $dir_path/$tumor/$partition.lock
-acquire_counter_lock $dir_path/$tumor/$partition.lock
-acquire_counter_lock $dir_path/$normal/$partition.lock
+# acquire_counter_lock $dir_path/$tumor/$partition.lock
+# acquire_counter_lock $dir_path/$normal/$partition.lock
 
 trap "release_counter_lock $dir_path/$tumor/$partition.lock; release_counter_lock $dir_path/$normal/$partition.lock" INT TERM EXIT
-
 
 # : << '#__COMMENT__OUT__'
 pindel -f $GENOME_REF -i ${CONFIG_FILE} -o ${OUT_DIR}/${SAMPLE_ID} -T ${THREAD} > ${OUT_DIR}/${SAMPLE_ID}.log 2>&1
 #__COMMENT__OUT__
 
 
-
-release_counter_lock $dir_path/$tumor/$partition.lock
-release_counter_lock $dir_path/$normal/$partition.lock
-
-trap - INT TERM EXIT
 
 check_file_existence "pindel _TD" ${OUT_DIR}/${SAMPLE_ID}_TD
 check_file_existence "pindel _SI" ${OUT_DIR}/${SAMPLE_ID}_SI
@@ -138,20 +132,29 @@ cd $CWD
 # |-> [X] remove couter lock if decrement to zero, and remove file
 # |-> [X] decrement if counter is not zero, and pass
 
+release_counter_lock $dir_path/$tumor/$partition.lock
+release_counter_lock $dir_path/$normal/$partition.lock
 
-if [ -f "$dir_path/$tumor/$partition.lock" ] && [ -f "$dir_path/$normal/$partition.lock" ]; then
-  log 1 "Lockfile exists for $dir_path/$tumor and $dir_path/$normal."
-  log 1 "Skipping removal for $SAMPLE_ID."
-  log 1 ""
+trap - INT TERM EXIT
 
-else
-  for file_path in $(awk -F'\t' '{print $1}' "$CONFIG_FILE"); do
+for file_path in $(awk -F'\t' '{print $1}' "$CONFIG_FILE"); do
 
-    parent_dir=$(dirname "${file_path}")
-    sample_name=$(basename ${file_path} .bam)
+  parent_dir=$(dirname "${file_path}")
+  sample_name=$(basename ${file_path} .bam)
+  if [[ $sample_name =~ ^([^.]+)\.([^.]+)$ ]]; then
+    sample=${BASH_REMATCH[1]}
+    part=${BASH_REMATCH[2]}
+  fi
 
+  if [ -f "$parent_dir/$part.lock" ]; then
+    log 1 "Lockfile exists for $parent_dir/$part.lock."
+    log 1 "Skipping removal for $sample - $part."
+    log 1 ""
 
-    log 1 "Removing sample_name BAM file and BAI index"
+  else
+    log 1 "Lockfile doest not exists for $parent_dir/$part.lock."
+
+    log 1 "Removing $sample_name BAM file and BAI index"
     rm $parent_dir/$sample_name.bam
     rm $parent_dir/$sample_name.bai
     log 1 "Done removing"
@@ -165,8 +168,9 @@ else
       log 1 "Removed ${parent_dir}"
     fi 
     log 1 ""
-  done
-fi
+  fi
+done
+
 
 log 1 "Done ${SAMPLE_ID} Pindel ITD calling !!"
 log 1 ""
