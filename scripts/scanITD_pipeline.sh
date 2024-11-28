@@ -78,63 +78,31 @@ log 1 ""
 check_and_create_dir ${OUT_DIR} ${NORMAL_ID}
 log 1 ""
 
-SAMPLE_DIR=${OUT_DIR}/${TUMOR_ID}_${NORMAL_ID}
-if [[ ! -d "${SAMPLE_DIR}" ]]; then
-  log 1 "Creating Sample Directory at ${SAMPLE_DIR}"
-  mkdir -p "${SAMPLE_DIR}"
-fi
+# SAMPLE_DIR=${OUT_DIR}/${TUMOR_ID}_${NORMAL_ID}
+# if [[ ! -d "${SAMPLE_DIR}" ]]; then
+#   log 1 "Creating Sample Directory at ${SAMPLE_DIR}"
+#   mkdir -p "${SAMPLE_DIR}"
+# fi
 
 # step 1: BAM slicing
 
-bash ${PIPELINE_DIR}/utility/slice_bam.sh -v $VERBOSE \
-  -f ${TUMOR_SAMPLE} \
-  -o $TUMOR_DIR \
-  -s $SCANITD_SLICE_CHROM
+# bash ${PIPELINE_DIR}/utility/slice_bam.sh -v $VERBOSE \
+#   -f ${TUMOR_SAMPLE} \
+#   -o $TUMOR_DIR \
+#   -s $SCANITD_SLICE_CHROM
 
-bash ${PIPELINE_DIR}/utility/slice_bam.sh -v $VERBOSE \
-  -f ${NORMAL_SAMPLE} \
-  -o $NORMAL_DIR \
-  -s $SCANITD_SLICE_CHROM
-
-# step 2: create ScanITD Config File: for merging
-
-CONFIG_DIR=${SAMPLE_DIR}/config
-if [[ ! -d "${CONFIG_DIR}" ]]; then
-  log 1 "Creating Configuration File Directory at ${CONFIG_DIR}"
-  mkdir -p "${CONFIG_DIR}"
-  log 1 "Done creating Configuration File Directory !"
-  log 1 ""
-fi
-
-declare -a partition_array
-
-while read -r partition; do
-    partition_array+=("$partition")
-done < <(awk -F= '{print $1}' $SCANITD_SLICE_CHROM)
-
-for partition in ${partition_array[@]}; do
-  # make config
-  bash ${PIPELINE_DIR}/utility/make_config.sh -v $VERBOSE \
-    -i $SAMPLE_DIR \
-    -o $CONFIG_DIR \
-    -S $SAMPLE_ID \
-    -t $TUMOR_ID \
-    -n $NORMAL_ID \
-    -p $partition
-
-  CONFIG_FILE=$CONFIG_DIR/${TUMOR_ID}_${NORMAL_ID}.${partition}.bam_config.txt
-  check_file_existence "scanITD configuration" $CONFIG_FILE
-done
+# bash ${PIPELINE_DIR}/utility/slice_bam.sh -v $VERBOSE \
+#   -f ${NORMAL_SAMPLE} \
+#   -o $NORMAL_DIR \
+#   -s $SCANITD_SLICE_CHROM
 
 sbatch ${PIPELINE_DIR}/scripts/run_scanITD.sh -v $VERBOSE \
-  -i $TUMOR_DIR \
+  -f $TUMOR_SAMPLE \
   -o $TUMOR_DIR \
-  -S $TUMOR_ID \
   -s $SCANITD_SLICE_CHROM &
 
 sbatch ${PIPELINE_DIR}/scripts/run_scanITD.sh -v $VERBOSE \
-  -i $NORMAL_DIR \
+  -f $NORMAL_SAMPLE \
   -o $NORMAL_DIR \
-  -S $NORMAL_ID \
   -s $SCANITD_SLICE_CHROM &
 
