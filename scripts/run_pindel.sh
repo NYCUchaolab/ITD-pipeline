@@ -79,13 +79,34 @@ conda activate $PINDEL_ENV
 
 CWD=$(pwd)
 
-# FIXME: [ ] create p1, p2 specific counter lock
-# |-> [ ] check counter lock existence and create if not created
-# |-> [ ] increment counter if counter lock existed
+# [X] create p1, p2 specific counter lock
+# |-> [X] check counter lock existence and create if not created
+# |-> [X] increment counter if counter lock existed
+
+if [[ $OUT_DIR =~ (.+)/([^_]+)_([^_]+)/([^/]+)$ ]]; then
+  dir_path=${BASH_REMATCH[1]}
+  tumor=${BASH_REMATCH[2]}
+  normal=${BASH_REMATCH[3]}
+  partition=${BASH_REMATCH[4]}
+fi 
+
+log 1 "$dir_path"
+log 1 "$tumor"
+log 1 "$normal"
+log 1 "$partition"
+log 1 ""
+
+# log 1 $dir_path/$tumor/$partition.lock
+# acquire_counter_lock $dir_path/$tumor/$partition.lock
+# acquire_counter_lock $dir_path/$normal/$partition.lock
+
+trap "release_counter_lock $dir_path/$tumor/$partition.lock; release_counter_lock $dir_path/$normal/$partition.lock" INT TERM EXIT
 
 # : << '#__COMMENT__OUT__'
 pindel -f $GENOME_REF -i ${CONFIG_FILE} -o ${OUT_DIR}/${SAMPLE_ID} -T ${THREAD} > ${OUT_DIR}/${SAMPLE_ID}.log 2>&1
 #__COMMENT__OUT__
+
+
 
 check_file_existence "pindel _TD" ${OUT_DIR}/${SAMPLE_ID}_TD
 check_file_existence "pindel _SI" ${OUT_DIR}/${SAMPLE_ID}_SI
@@ -107,10 +128,33 @@ rm somatic.indel.filter.config
 cd $CWD
 #__COMMENT__OUT__
 
+# [X] remove / decrement counter lock
+# |-> [X] remove couter lock if decrement to zero, and remove file
+# |-> [X] decrement if counter is not zero, and pass
+
+release_counter_lock $dir_path/$tumor/$partition.lock
+release_counter_lock $dir_path/$normal/$partition.lock
+
+trap - INT TERM EXIT
+
 for file_path in $(awk -F'\t' '{print $1}' "$CONFIG_FILE"); do
-    parent_dir=$(dirname "${file_path}")
-    sample_name=$(basename ${file_path} .bam)
-    log 1 "Removing sample_name BAM file and BAI index"
+
+  parent_dir=$(dirname "${file_path}")
+  sample_name=$(basename ${file_path} .bam)
+  if [[ $sample_name =~ ^([^.]+)\.([^.]+)$ ]]; then
+    sample=${BASH_REMATCH[1]}
+    part=${BASH_REMATCH[2]}
+  fi
+
+  if [ -f "$parent_dir/$part.lock" ]; then
+    log 1 "Lockfile exists for $parent_dir/$part.lock."
+    log 1 "Skipping removal for $sample - $part."
+    log 1 ""
+
+  else
+    log 1 "Lockfile doest not exists for $parent_dir/$part.lock."
+
+    log 1 "Removing $sample_name BAM file and BAI index"
     rm $parent_dir/$sample_name.bam
     rm $parent_dir/$sample_name.bai
     log 1 "Done removing"
@@ -124,11 +168,9 @@ for file_path in $(awk -F'\t' '{print $1}' "$CONFIG_FILE"); do
       log 1 "Removed ${parent_dir}"
     fi 
     log 1 ""
+  fi
 done
 
-# FIXME: [ ] remove / decrement counter lock
-# |-> [ ] remove couter lock if decrement to zero, and remove file
-# |-> [ ] decrement if counter is not zero, and pass
 
 log 1 "Done ${SAMPLE_ID} Pindel ITD calling !!"
 log 1 ""
