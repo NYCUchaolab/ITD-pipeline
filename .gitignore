@@ -1,7 +1,6 @@
 test/
 template/
 tools/
- *.fa
- *.fai
+*.fa
+*.fai
 Run_pipeline.sh
- 
