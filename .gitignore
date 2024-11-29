@@ -3,3 +3,5 @@ template/
 tools/
  *.fa
  *.fai
+ Run_pipeline.sh
+ 
