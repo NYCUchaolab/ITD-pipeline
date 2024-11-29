@@ -133,8 +133,44 @@ log 1 "tumor BAM file   : $TUMOR_BAM"
 log 1 "normal BAM file  : $NORMAL_BAM"
 log 1 ""
 
-check_bai_existence "${TUMOR_BAM}" 
-check_bai_existence "${NORMAL_BAM}" 
+# FIXME: [X] create a waiting lock
+
+T_LOCKFILE="$INPUT_DIR/$Tumor_fileID.lock"
+N_LOCKFILE="$INPUT_DIR/$Normal_fileID.lock"
+
+# step 1: BAM slicing
+if [ -f $T_LOCKFILE ]; then
+  while [ -f "$T_LOCKFILE" ]; do
+    log 1 "Lockfile exists: $T_LOCKFILE. Waiting..."
+    sleep 1
+  done
+else
+  echo "$$" > "$T_LOCKFILE"
+  log 1 "Acquired lock: $T_LOCKFILE"
+  trap "wait_lock_cleanup $T_LOCKFILE" INT TERM EXIT
+
+  check_bai_existence "${TUMOR_BAM}" 
+  
+  wait_lock_cleanup $T_LOCKFILE
+fi
+
+# step 1: BAM slicing
+if [ -f $N_LOCKFILE ]; then
+  while [ -f "$N_LOCKFILE" ]; do
+    log 1 "Lockfile exists: $N_LOCKFILE. Waiting..."
+    sleep 1
+  done
+else
+  echo "$$" > "$N_LOCKFILE"
+  log 1 "Acquired lock: $N_LOCKFILE"
+  trap "wait_lock_cleanup $N_LOCKFILE" INT TERM EXIT
+
+  check_bai_existence "${NORMAL_BAM}" 
+  
+  wait_lock_cleanup $N_LOCKFILE
+fi
+
+trap - INT TERM EXIT
 
 
 # step 1: pindel calling
