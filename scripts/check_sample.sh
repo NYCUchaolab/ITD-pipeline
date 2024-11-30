@@ -76,28 +76,28 @@ check_variables_set Case_ID Tumor_fileID Normal_fileID Tumor_fileID
 # check pindel 
 declare -a pindel_partition
 
-check_dir_existence "Pindel: ${Tumor_fileID} - ${Normal_fileID}" $DIRECTORY/raw_data/pindel/${Tumor_fileID}_${Normal_fileID}
+check_dir_existence2 "Pindel: ${Tumor_fileID} - ${Normal_fileID}" $DIRECTORY/raw_data/pindel/${Tumor_fileID}_${Normal_fileID}
 
 for partition in $(awk -F= '{print $1}' $PINDEL_SLICE_CHROM); do
-    check_file_existence "Pindel: $partition result" $DIRECTORY/raw_data/pindel/${Tumor_fileID}_${Normal_fileID}/$partition/indel.filter.output
+    check_file_existence2 "Pindel: $partition result" $DIRECTORY/raw_data/pindel/${Tumor_fileID}_${Normal_fileID}/$partition/indel.filter.output
 done
 
 # check scanITD
-check_dir_existence "ScanITD: ${Tumor_fileID}" $DIRECTORY/raw_data/scanITD/${Tumor_fileID}
-check_dir_existence "ScanITD: ${Normal_fileID}" $DIRECTORY/raw_data/scanITD/${Normal_fileID}
+check_dir_existence2 "ScanITD: ${Tumor_fileID}" $DIRECTORY/raw_data/scanITD/${Tumor_fileID}
+check_dir_existence2 "ScanITD: ${Normal_fileID}" $DIRECTORY/raw_data/scanITD/${Normal_fileID}
 
 declare -a scanITD_partition
 
 for partition in $(awk -F= '{print $1}' $SCANITD_SLICE_CHROM); do
-    check_file_existence "ScanITD: $Tumor_fileID $partition result" $DIRECTORY/raw_data/scanITD/${Tumor_fileID}/$partition.itd.vcf
-    check_file_existence "ScanITD: $Normal_fileID $partition result" $DIRECTORY/raw_data/scanITD/${Normal_fileID}/$partition.itd.vcf
+    check_file_existence2 "ScanITD: $Tumor_fileID $partition result" $DIRECTORY/raw_data/scanITD/${Tumor_fileID}/$partition.itd.vcf
+    check_file_existence2 "ScanITD: $Normal_fileID $partition result" $DIRECTORY/raw_data/scanITD/${Normal_fileID}/$partition.itd.vcf
 done
 
-check_dir_existence "GenomonITD: ${Tumor_fileID}" $DIRECTORY/raw_data/genomonITD/${Tumor_fileID}
-check_dir_existence "GenomonITD: ${Normal_fileID}" $DIRECTORY/raw_data/genomonITD/${Normal_fileID}
+check_dir_existence2 "GenomonITD: ${Tumor_fileID}" $DIRECTORY/raw_data/genomonITD/${Tumor_fileID}
+check_dir_existence2 "GenomonITD: ${Normal_fileID}" $DIRECTORY/raw_data/genomonITD/${Normal_fileID}
 
-check_file_existence "GenomonITD: $Tumor_fileID result" $DIRECTORY/raw_data/genomonITD/${Tumor_fileID}/itd_list.tsv
-check_file_existence "GenomonITD: $Normal_fileID result" $DIRECTORY/raw_data/genomonITD/${Normal_fileID}/itd_list.tsv
+check_file_existence2 "GenomonITD: $Tumor_fileID result" $DIRECTORY/raw_data/genomonITD/${Tumor_fileID}/itd_list.tsv
+check_file_existence2 "GenomonITD: $Normal_fileID result" $DIRECTORY/raw_data/genomonITD/${Normal_fileID}/itd_list.tsv
 
 log 1 "$Tumor_fileID Successed"
 log 1 "$Normal_fileID Successed" 

@@ -75,6 +75,26 @@ check_dir_existence() {
   fi  
 }
 
+check_file_existence2() {
+  local file_name=$1
+  local file_path=$2
+
+  if [ ! -f "$file_path" ]; then
+  log 0 "Error: The ${file_name} file '$file_path' does not exist."
+  log 0 ""
+  fi  
+}
+
+check_dir_existence2() {
+  local dir_name=$1
+  local dir_path=$2
+
+  if [ ! -d "$dir_path" ]; then
+  log 0 "Error: The ${dir_name} directory '$dir_path' does not exist."
+  log 0 ""
+  fi  
+}
+
 check_variables_set() {
   local unset_vars=()  
 
