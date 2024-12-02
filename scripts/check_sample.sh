@@ -54,6 +54,11 @@ do
   esac
 done
 
+# TODO: make each report caller-groupeded such as: scanITD: [] sucessed, [] failed, failed partition: xxx
+# [ ] group the check report to caller level
+# [ ] report the sample number
+# [ ] create a verbose level for 2: sample level, 3: file level, 4: caller level, 5: partitin level
+
 : << 'TODO_LIST'
 1. [X] read the sample sheet 
 2. [X] check pindel: 
@@ -88,6 +93,7 @@ check_dir_existence2 "ScanITD: ${Normal_fileID}" $DIRECTORY/raw_data/scanITD/${N
 
 declare -a scanITD_partition
 
+# FIXME: check ONLY .itd.vcf exist, no other file --> then consist of success 
 for partition in $(awk -F= '{print $1}' $SCANITD_SLICE_CHROM); do
     check_file_existence2 "ScanITD: $Tumor_fileID $partition result" $DIRECTORY/raw_data/scanITD/${Tumor_fileID}/$partition.itd.vcf
     check_file_existence2 "ScanITD: $Normal_fileID $partition result" $DIRECTORY/raw_data/scanITD/${Normal_fileID}/$partition.itd.vcf
