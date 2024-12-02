@@ -7,10 +7,10 @@ Sample_sheet=$1
 cancer=$2
 count=0
 
-header=$(head -n 1 "$Sample_sheet")
+header=$(head -n 1 "$Sample_sheet" | tr ',' '\t')
 
 # Loop through each line after the header (for tumor samples)
-while IFS=$'\t' read -r -a sample; do
+while IFS=$',' read -r -a sample; do
   Cancer_type=${sample[6]: -3:1}
   Case_ID=${sample[5]}
   
@@ -20,7 +20,7 @@ while IFS=$'\t' read -r -a sample; do
     tumor_sample=${tumor_sample%$'\t'}  # Remove the trailing tab
     
     # Loop through each line after the header (for normal samples)
-    while IFS=$'\t' read -r -a sample_par; do
+    while IFS=$',' read -r -a sample_par; do
       Cancer_type_par=${sample_par[6]: -3:1}
       Case_ID_par=${sample_par[5]}
       

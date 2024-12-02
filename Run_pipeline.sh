@@ -12,6 +12,7 @@ for number in $(seq $start_number $end_number); do
     bash ~/ITD-pipeline/ITD_pipeline_v3_1.sh -v 1 \
         -s ~/TCGA_sliced/${cancer}_samplesheet/${cancer}_sample_${number}.tsv \
         -i ~/TCGA_sliced/${cancer} \
-        -o ~/TCGA_sliced/result \
-        -t ~/TCGA_sliced/result > ~/log_dir/${cancer}.${number}.log
+        -o ~/TCGA_sliced/result/$cancer \
+        -t ~/TCGA_sliced/result/$cancer > ~/log_dir/${cancer}.${number}.log
+
 done
