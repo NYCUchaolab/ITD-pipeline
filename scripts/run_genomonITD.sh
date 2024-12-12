@@ -6,7 +6,7 @@
 #SBATCH -c 28           # 使用的core數 請參考Queue資源設定
 #SBATCH --mem=186g           # 使用的記憶體量 請參考Queue資源設定
 #SBATCH --mail-user=hiiluann99.dump@gmail.com    # email
-#SBATCH --mail-type=ALL              # 指定送出email時機 可為NONE, BEGIN, END, FAIL, REQUEUE, ALL
+#SBATCH --mail-type=FAIL              # 指定送出email時機 可為NONE, BEGIN, END, FAIL, REQUEUE, ALL
 
 set -euo pipefail
 
