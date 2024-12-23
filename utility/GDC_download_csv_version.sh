@@ -36,7 +36,7 @@ do
   case $1 in
     -V | --version)        echo $VERSION ; exit 1 ;;
     -v | --verbose)        verbose=true ; shift   ;;
-    -h | --help)           usage ; exit 1 ;;
+    -h | --help)           wanglab_banner2 ;usage ; exit 1 ;;
     -s | --sample_sheet)   SAMPLE_SHEET=$2 ; shift 2;;
     -o | --out_dir)        OUT_DIR=$2   ; shift 2 ;;
 
@@ -88,7 +88,7 @@ fi
 }
 
 # reading sample sheet
-tail -n +2 $SAMPLE_SHEET | while IFS=$'\t' read -r -a sample
+tail -n +2 $SAMPLE_SHEET | while IFS=$',' read -r -a sample
 do
         # [0]: file ID
         # [1]: file name
