@@ -72,7 +72,6 @@ log 1 "Output Directory : ${OUT_DIR}"
 log 1 "Sample Case ID   : ${SAMPLE_ID}"
 log 1 "Configuration File : ${CONFIG_FILE}"
 log 1 ""
-py
 
 eval "$(conda shell.bash hook)"
 conda activate $PINDEL_ENV
