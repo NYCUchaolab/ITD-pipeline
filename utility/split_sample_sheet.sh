@@ -30,8 +30,8 @@ while IFS=$'\t' read -r -a sample; do
         normal_sample=$(printf "%s\t" "${sample_par[@]}")  # Format normal sample as tab-separated
         normal_sample=${normal_sample%$'\t'}  # Remove the trailing tab
         #
-        [ ! -d ~/data_10T/TCGA_cancer_census_gene/${cancer}_samplesheet ] && mkdir ~/data_10T/TCGA_cancer_census_gene/${cancer}_samplesheet
-        config_file=~/data_10T/TCGA_cancer_census_gene/${cancer}_samplesheet/${cancer}_sample_${count}.tsv
+        [ ! -d ~/data_10T/TCGA_whole/${cancer}_samplesheet ] && mkdir ~/data_10T/TCGA_whole/${cancer}_samplesheet
+        config_file=~/data_10T/TCGA_whole/${cancer}_samplesheet/${cancer}_sample_${count}.tsv
         #
         touch "$config_file"
         echo -e "$header" > "$config_file"
