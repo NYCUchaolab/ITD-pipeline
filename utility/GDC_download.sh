@@ -36,18 +36,6 @@ eval set -- ${args}
 while :
 do
   case $1 in
-<<<<<<< Updated upstream
-    -V | --version)        echo $VERSION ; exit 1 ;;
-    -v | --verbose)        verbose=true ; shift   ;;
-    -h | --help)           usage ; exit 1 ;;
-    -s | --sample_sheet)   SAMPLE_SHEET=$2 ; shift 2;;
-    -o | --out_dir)        OUT_DIR=$2   ; shift 2 ;;
-
-    # -- means the end of the arguments; drop this, and break out of the while loop
-    --) shift; break ;;
-    *) >&2 echo Unsupported option: $1
-       usage ;;
-=======
     -V | --version)        echo $VERSION ; exit 0 ;;
     -v | --verbose)        verbose=true ; shift ;;
     -h | --help)           usage ; exit 0 ;;
@@ -55,7 +43,6 @@ do
     -o | --out_dir)        OUT_DIR=$2 ; shift 2 ;;
     --) shift ; break ;;
     *) >&2 echo "Unsupported option: $1" ; usage ; exit 1 ;;
->>>>>>> Stashed changes
   esac
 done
 
@@ -76,7 +63,7 @@ mkdir -p "$OUT_DIR"
 
 # Function to download files using gdc-client
 gdc_download() {
-  GDC_TOKEN="/home/u4583512/ITD-pipeline/database/gdc-user-token.2024-12-09T06_41_36.514Z.txt"
+  GDC_TOKEN=./database/gdc-user-token.2024-12-09T06_41_36.514Z.txt
   file_id=${1}
   file_name=${2}
   sample_id=${3}
@@ -95,22 +82,11 @@ gdc_download() {
   echo "Done downloading file_id: $file_id"
 }
 
-<<<<<<< Updated upstream
-# reading sample sheet
-tail -n +2 $SAMPLE_SHEET | while IFS=$'\t' read -r -a sample
-do
-        # [0]: file ID
-        # [1]: file name
-        # [6]: sample ID
-
-        gdc_download ${sample[0]} ${sample[1]} ${sample[6]}
-=======
 # Process the sample sheet
 echo "Reading sample sheet: $SAMPLE_SHEET"
 tail -n +2 "$SAMPLE_SHEET" | while IFS=$'\t' read -r -a sample
   do
     gdc_download "${sample[0]}" "${sample[1]}" "${sample[6]}"
->>>>>>> Stashed changes
 done
 
 echo "All downloads completed successfully."
