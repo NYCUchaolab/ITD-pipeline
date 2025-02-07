@@ -1,99 +1,68 @@
 # ITD Pipeline
-<img width="1031" alt="截圖 2024-11-27 晚上11 49 37" src="https://github.com/user-attachments/assets/d2a790a7-d5cb-4a91-8a29-2134de29fa5e" width="1000" height="265">
+<img width="1031" src="https://github.com/Juan-Jeffery/ITD-pipeline/blob/main/ITD-pipeline.png" width="1000" height="265">
 
-## ITD_pipeline.sh
-1. Slice BAM files by chromosome using `Slice_bam.sh` (Chromosomes 1, 2, 3, and 7 will be further divided into p and q arms)
-2. Create tumor/normal pair configurations by sample using `Make_config.sh`
-3. Run three ITD detection tools by reading the configuration:
-    - `run_genomonITD.sh`
-    - `run_pindel.sh`
-    - `run_ScanITD.sh`
-4. Deduplicate & Filter ITDs
-    - `filter_genomonITD.sh`
-    - `filter_pindel.sh`
-    - `filter_scanITD.sh`
-5. Merge ITDs from all chromosomes within the same sample for each caller
-    - `merge_genomonITD.sh`
-    - `merge_pindel.sh`
-    - `merge_scanITD.sh`
-    - For tumor/normal comparison:
-       - `merge_genomonITD_TN.sh`
-       - `merge_scanITD_TN.sh`
-         
-6. Combine the ITD results from all three callers into a final output:
-     - `merge_all_caller.sh`
+---
 
-## Calling
-### run_genomonITD.sh
-**Required Files:**
-   - `hg38.refGene.gtf` [2020](https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/genes/)
-   - `hg38.knowGene.gtf` [2023](https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/genes/)
-   - `hg38.ensGene.gtf` [2020](https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/genes/)
-   - `simpleRepeat.txt` [2022](https://hgdownload.soe.ucsc.edu/goldenPath/hg38/database/)
+### Install
+1. Clone the repository and create the output folder:
+    ```bash
+    git clone https://github.com/NYCUchaolab/ITD-pipeline.git
+    ```
+2. Add the following command to your `~/.bashrc` or `~/.bash_aliases`, and update the bash configuration using `source ~/.bashrc`:
+    ```bash
+    export ITD_PIPELINE_CONFIG="/home/user/ITD_pipeline_v3_1/config/ITD_pipeline.config"
+    ```
+3. Create environments:
+    ```bash
+    conda create -n master-genomonITD --file /home/user/ITD-pipeline/config/genomonITD.txt
+    conda create -n master-pindel --file /home/user/ITD-pipeline/config/pindel.txt
+    conda create -n master-scanITD --file /home/user/ITD-pipeline/config/scanITD.txt
+    ```
+4. Ensure all folders have permissions set to `755`:
+    ```bash
+    chmod -R 755 /path/to/your/folders
+    ```
+5. Update the following configuration files as needed:
+    - `database/somatic.indel.filter.config`
+    - `config/itd_pipeline.config`
+    - `config.env`
+6. Update Gmail settings for the tools as required.
 
-**Run:**
-1. Read configuration parameters from `parameters.config`.
-2. Execute Genomon-ITDetecter via `detectITD.sh`.
-3. Store results in directories organized by File ID and chromosome.
+### Run
+#### samplesheet_splicing
+1. Run the sample sheet splitting script (update folder paths as needed):
+    ```bash
+    utility/split_sample_sheet.sh OVCA_gdc_sample_sheet.2019-07-01.tsv OVCA
+    ```
+#### run_ITD_pipeline
+- Use the following commands to run the pipeline:
+    ```bash
+    bash Run_pipeline.sh <parameters>
+    ```
+    Or run in the background with logging:
 
-### run_pindel.sh
-**Required Files:**
-   - `parameters.config`
-   - `somatic_indelfilter.pl` (Pindel's T/N filtering script)
-   - `somatic.indel.filter.config`
+    ```bash
+    nohup bash Run_pipeline.sh > output.log 2>&1 &
+    ```
+### Notes
+- Folder names should not be too long to avoid issues with Genomon.
+### Other
+#### GDC Install
+1. Update the token path in `GDC_download.sh`.
+2. Run the script:
+    ```bash
+    bash GDC_download.sh -s gdc_sample_sheet.2024-12-14.tsv -o output_dir/
+    ```
+#### Check for Errors
+- Use the batch checking script:
+    ```bash
+    bash batch_check_sample.sh OV 1 50
+    ```
+#### Merge Sample Sheets
+- When the sample sheet is too large and needs to be split into TN pairs, merge the files before performing the GDC download.
+    ```bash
+    bash merge_sample_sheet.sh GBM 1 50 "split_sample_sheet_dir" "output_file_name (e.g., 1_50.tsv)"
+    ```
 
-**Run:**
-1. Read configuration parameters from `parameters.config`.
-2. Execute Pindel for ITD detection.
-3. Apply `somatic_indelfilter.pl` to filter somatic indels.
-4. Store results in directories organized by Case ID and chromosome.
 
-### run_scanITD.sh
-**Required Files:**
-   - `gencode.v36.annotation.gtf` (divided into 23 chromosomes)
-
-**Run:**
-1. Read configuration parameters from `parameters.config`.
-2. Execute ScanITD using `ScanITD.py`.
-3. Store results in directories organized by File ID and chromosome.
-
-## Filtering and Deduplication:
-
-### filter_genomonITD.sh
-1. Read configuration parameters from `parameters.config`.
-2. Filter ITDs within length range 3 to 300 base pairs.
-3. Deduplicate ITDs sharing the same Sample ID.
-
-### filter_pindel.sh
-1. Read configuration parameters from `parameters.config`.
-2. Filter ITDs within length range 3 to 300 base pairs.
-3. Deduplicate ITDs sharing the same Case ID.
-
-### filter_scanITD.sh
-1. Read configuration parameters from `parameters.config`.
-2. Filter ITDs within length range 3 to 300 base pairs.
-3. Deduplicate ITDs sharing the same Sample ID.
-
-## Merging ITD Results:
-
-### merge_genomonITD.sh
-1. Read configuration parameters from `parameters.config`.
-2. Merge results for ITDs sharing the same Sample ID.
-3. Compare and merge results for ITDs sharing the same Case ID.
-
-### merge_pindel.sh
-1. Read configuration parameters from `parameters.config`.
-2. Merge results for ITDs sharing the same Sample ID.
-
-### erge_scanITD.sh
-1. Read configuration parameters from `parameters.config`.
-2. Merge results for ITDs sharing the same Sample ID.
-
-### merge_genomonITD_TN.sh
-1. Compare and merge tumor/normal ITD files for the same Case ID.
-
-### merge_scanITD_TN.sh
-1. Compare and merge tumor/normal ITD files for the same Case ID.
-
-### merge_all_caller.sh
-1. Output an ITD if it is detected by at least two of the three ITD callers (GenomonITD, Pindel, ScanITD).
+    
