@@ -34,10 +34,6 @@
     ```bash
     utility/split_sample_sheet.sh OVCA_gdc_sample_sheet.2019-07-01.tsv OVCA
     ```
-2. Execute the script:
-    ```bash
-    bash split_sample_sheet.sh
-    ```
 #### run_ITD_pipeline
 - Use the following commands to run the pipeline:
     ```bash
