@@ -86,6 +86,15 @@ gdc_download() {
 echo "Reading sample sheet: $SAMPLE_SHEET"
 tail -n +2 "$SAMPLE_SHEET" | while IFS=$',' read -r -a sample
   do
+    #check if sample exist
+    bam_file="$OUT_DIR/${sample[0]}.bam"
+    bai_file="$OUT_DIR/${sample[0]}.bai"
+    
+    if [[ -f "$bam_file" && -f "$bai_file" ]]; then
+        echo "File $bam_file already exists. Skipping download for file_id: ${sample[0]}"
+        continue
+    fi
+    
     gdc_download "${sample[0]}" "${sample[1]}" "${sample[6]}"
 done
 
