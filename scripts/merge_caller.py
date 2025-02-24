@@ -28,6 +28,29 @@ It is intended as a template for processing sample sheets in bioinformatics or s
 
 import argparse
 
+def write_info(dir: str, sampleSheet: str) -> None:
+    # check and count whether, dir/scanITD, pindel, genomonITD/ case_id*.{}.vcf exist
+    # write info in dir declaring the case_id_{XXX} is {Tumor ID} and {Normal ID}
+
+    ensure_dir(os.path.join(dir, "info"))
+
+    info = read_sample_info(sampleSheet)
+    callers = ["scanITD", "pindel", "genomonITD"]
+    count = 0
+    for caller in callers:
+        dir_path = os.path.join(dir, caller)
+        count = max(count, count_vcf_files(dir_path, info["Case ID"]))
+    
+    with open(os.path.join(dir,"info", f"{info['Case ID']}.info", ), "a") as f:
+        f.write(f"T-N pair {count}: {info['Case ID']}\n")
+        f.write("-" * 50 + "\n")
+        f.write(f"Sample Sheet: {sampleSheet}\n")
+        f.write(f"Tumor ID  : {info['Tumor ID']}\n")
+        f.write(f"Normal ID : {info['Normal ID']}\n")
+        f.write("-" * 50 + "\n\n")
+
+
+
 def ensure_dir(dir: str) -> bool:
     """
     Check if a directory exists, and create it if it does not.
@@ -37,9 +60,9 @@ def ensure_dir(dir: str) -> bool:
     """
     if not os.path.exists(dir):
         os.makedirs(dir)
-        print(f"Directory '{dir}' created.")
+        print(f"Directory '{dir}' created.\n")
     else:
-        print(f"Directory '{dir}' already exists.")
+        print(f"Directory '{dir}' already exists.\n")
 
 def check_file_exists(filepath: str) -> bool:
     """
@@ -81,7 +104,7 @@ def caller_type(ITD_df: ITD_DataFrame) -> tuple[str]:
     elif isinstance(ITD_df, GenomonITD):
         return 'genomonITD', 'genomonITD'
     elif isinstance(ITD_df, TrioITD):
-        return 'merge_caller', 'merge'
+        return 'merge_caller', 'merged'
     else:
         raise TypeError("ITD_df must be an instance of PindelITD, ScanITD, GenomonITD or TrioITD")
 
@@ -92,13 +115,13 @@ def write_caller(ITD_df: ITD_DataFrame, output_dir: str, case_id: str):
     ensure_dir(f"{output_dir}/{caller}")
     
     out_file_prefix = f"{output_dir}/{caller}/{case_id}"
-
     vcf_count = count_vcf_files(f"{output_dir}/{caller}", case_id)
     if vcf_count > 0: # more than 1 vcf exist(s)
         if caller == "merge_caller":
             # read existed vcf
-            ITD_df2 = TrioITD.read_ITD_vcf(f"{output_dir}/{caller}/{case_id}.{postfix}.vcf")
-            ITD_df = TrioITD.concat([ITD_df, ITD_df2]).sorting().deduplicate(chromosome_wise=True, multi_proc=True)
+
+            ITD_df2 = TrioITD.read_TRIO_vcf(f"{output_dir}/{caller}/{case_id}.{postfix}.vcf")
+            ITD_df = TrioITD.concat([ITD_df, ITD_df2]).sorting().deduplicate(chromosome_wise=True, multi_proc=True).sorting()
             ITD_df.to_vcf(f"{out_file_prefix}.{postfix}.vcf")
             print(f"write merged caller VCF at {out_file_prefix}.{postfix}.vcf")
         else:
@@ -108,8 +131,6 @@ def write_caller(ITD_df: ITD_DataFrame, output_dir: str, case_id: str):
     else:
         ITD_df.to_vcf(f"{out_file_prefix}.{postfix}.vcf")
         print(f"write {caller} VCF at {out_file_prefix}.{postfix}.vcf")
-
-        
 
 def write_merge_caller(ITD_df: TrioITD, output_dir: str, case_id: str):
     if not isinstance(ITD_df, TrioITD):
@@ -121,8 +142,6 @@ def write_merge_caller(ITD_df: TrioITD, output_dir: str, case_id: str):
         pass
     else:
         ITD_df.to_vcf(f"{out_file_prefix}.vcf")
-
-
 
 def get_parser():
     """
@@ -160,18 +179,6 @@ if __name__ == '__main__':
     print("Input Directory:", args.input_dir)
     print("Output Directory:", args.output_dir)
 
-    #TODO:
-    # [√] read sample sheet
-    # [√] read pindel
-    # [√] read scanITD
-    # [√] read genomonITD
-    # [√] merge caller
-    # [√] save each caller (4)
-    #   [√] check if the file was existed
-    #   [√] add _# for the individual caller and save it 
-    #   [√] read the existed merged caller vcf, and intersect with this
-    #   [√] overwrite the existed merged caller vcf
-
     sample_info = read_sample_info(args.samplesheet) # Case ID, Tumor ID, Normla ID
     input_dir = args.input_dir
     out_dir = args.output_dir
@@ -183,13 +190,10 @@ if __name__ == '__main__':
     genomonITD_df = GenomonITD.read_paired_sample(f'{input_dir}/genomonITD', sample_info)
 
     trio_ITD = TrioITD.merge_3_caller(scanITD_df, pindelITD_df, genomonITD_df).sorting()
-    # check directory existence else create
-    # each write
-    
-    ###### pindel #######
-    
     # check directory existence
     write_caller(pindelITD_df, out_dir, case_id)
     write_caller(scanITD_df, out_dir, case_id)
     write_caller(genomonITD_df, out_dir, case_id)
-    write_merge_caller(trio_ITD, out_dir, case_id)
+    write_caller(trio_ITD, out_dir, case_id)
+    write_info(out_dir, args.samplesheet)
+
