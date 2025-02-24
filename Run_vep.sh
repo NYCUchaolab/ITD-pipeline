@@ -6,19 +6,17 @@ end_number=5
 cancer="GBM"
 
 #
+source $ITD_PIPELINE_CONFIG
+
+#
 eval "$(conda shell.bash hook)"
-conda activate vep113
+conda activate $pyITD_ENV
 
 #
 input_dir="/staging/biology/u4583512/TCGA_whole/${cancer}/modified_vcf/merge_caller"
 output_dir="/staging/biology/u4583512/TCGA_whole/${cancer}/vep_result"
 
 mkdir -p "$output_dir"  "$output_dir/split_vcf" "$output_dir/vep_vcf" "$output_dir/vep_maf"
-
-#
-ref="/home/u4583512/ITD-pipeline-3.12/tools/GenomonITDetector38/GRCh38.d1.vd1.fa"
-vep_data="/staging/biology/u4583512/"
-vep_path="/home/u4583512/miniconda3/envs/vep113/share/ensembl-vep-113.2-0/"
 
 #
 vcf_files=($(ls "$input_dir"/*.vcf))
@@ -39,9 +37,9 @@ for number in $(seq "$start_number" "$end_number"); do
         --output-maf "${output_dir}/vep_maf/${case_id}.maf" \
         --normal-id "${case_id}_N" \
         --tumor-id "${case_id}_T" \
-        --ref-fasta "$ref" \
-        --vep-data "$vep_data" \
-        --vep-path "$vep_path" \
+        --ref-fasta $vep113_REF \
+        --vep-data $vep113_DATA \
+        --vep-path $vep113_PATH \
         --ncbi-build GRCh38 \
         --cache-version 113 \
         --vep-overwrite

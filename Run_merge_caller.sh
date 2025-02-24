@@ -6,8 +6,12 @@ end_number=678
 cancer="GBM"
 
 #
+source $ITD_PIPELINE_CONFIG
+
+#
 eval "$(conda shell.bash hook)"
-conda activate master-pyITD
+conda activate $vep113_ENV
+
 #
 base_dir="/staging/biology/u4583512/TCGA_whole/${cancer}/modified_vcf"
 mkdir -p "$base_dir/genomonITD" "$base_dir/pindel" "$base_dir/scanITD" "$base_dir/merge_caller"
