@@ -15,7 +15,7 @@ use Text::Wrap;
 # Set any default paths and constants
 my ( $tumor_id, $normal_id ) = ( "TUMOR", "NORMAL" );
 my ( $vep_path, $vep_data, $vep_forks, $buffer_size, $any_allele, $inhibit_vep, $online, $vep_custom, $vep_config, $vep_overwrite, $vep_stats  ) = ( "$ENV{HOME}/miniconda3/bin", "$ENV{HOME}/.vep", 4, 5000, 0, 0, 0, "", "", 0 , 0);
-my ( $ref_fasta ) = ( "/home/data/database/vep/homo_sapiens/113_GRCh38/Homo_sapiens.GRCh38.dna.toplevel.fa.gz" );
+my ( $ref_fasta ) = ( "/home/u4583512/ITD-pipeline-3.12/tools/GenomonITDetector38/GRCh38.d1.vd1.fa" );
 my ( $species, $ncbi_build, $cache_version, $maf_center, $retain_info, $retain_fmt, $retain_ann, $min_hom_vaf, $max_subpop_af ) = ( "homo_sapiens", "GRCh37", "", ".", "", "", "", 0.7, 0.0004 );
 my $perl_bin = $Config{perlpath};
 
@@ -338,7 +338,8 @@ while( my $line = $orig_vcf_fh->getline ) {
             $split_vcf_fh->print( join( "\t", $info{CHR2}, $info{END}, $cols[2], ( $ref2 ? $ref2 : $cols[3] ), @cols[4..$#cols] ), "\n" );
             $split_vcf_fh->print( join( "\t", @cols ), "\n" );
         }
-        $input_vcf = "$tmp_dir/$input_name.split.vcf";
+        #$input_vcf = "$tmp_dir/$input_name.split.vcf";
+        $input_vcf = "$tmp_dir/$input_name.vcf";
     }
     else {
         $split_vcf_fh->print( join( "\t", @cols ), "\n" );

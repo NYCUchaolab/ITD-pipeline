@@ -28,44 +28,30 @@
     - `database/somatic.indel.filter.config`
     - `config/itd_pipeline.config`
     - `config/config.env`
-    - `script/vcf2maf.pl`
 6. Update Gmail settings for the tools as required.
 
 ### Run
 #### samplesheet_splicing
 1. Run the sample sheet splitting script (update folder paths as needed):
     ```bash
-    utility/split_sample_sheet.sh OVCA_gdc_sample_sheet.2019-07-01.tsv OVCA
+    utility/split_sample_sheet.sh OVCA_gdc_sample_sheet.tsv OVCA
     ```
 #### run_ITD_pipeline
 - Use the following commands to run the pipeline:
     ```bash
-    bash Run_pipeline.sh <parameters>
-    ```
-    Or run in the background with logging:
-
-    ```bash
-    nohup bash Run_pipeline.sh > output.log 2>&1 &
+    bash Run_pipeline.sh <parameters> "OV" start_sample_number end_sample_number (number is from split_sample.sh)
     ```
 #### run_merge_caller
 - Use the following commands to run the pipeline:
     ```bash
-    bash Run_merge_caller.sh <parameters>
+    bash Run_merge_caller.sh <parameters> "OV" start_sample_number end_sample_number (number is from split_sample.sh)
     ```
     Or run in the background with logging:
 
-    ```bash
-    nohup bash Run_merge_caller.sh > output.log 2>&1 &
-    ```
 #### run_vep (113)
 - Use the following commands to run the pipeline:
     ```bash
-    bash Run_vep.sh <parameters>
-    ```
-    Or run in the background with logging:
-
-    ```bash
-    nohup bash Run_vep.sh > output.log 2>&1 &
+    bash Run_vep.sh <parameters>"OV" start_sample_number end_sample_number (number is from split_sample.sh)
     ```
 ### Notes
 - Folder names should not be too long to avoid issues with Genomon.
