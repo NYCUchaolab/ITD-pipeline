@@ -3,75 +3,103 @@
 
 ---
 
-### Install
-1. Clone the repository and create the output folder:
-    ```bash
-    git clone https://github.com/NYCUchaolab/ITD-pipeline.git
-    ```
-2. Add the following command to your `~/.bashrc` or `~/.bash_aliases`, and update the bash configuration using `source ~/.bashrc`:
-    ```bash
-    export ITD_PIPELINE_CONFIG="/home/user/ITD_pipeline_v3_1/config/ITD_pipeline.config"
-    ```
-3. Create environments:
-    ```bash
-    conda create -n master-genomonITD --file /home/user/ITD-pipeline/config/genomonITD.txt
-    conda create -n master-pindel --file /home/user/ITD-pipeline/config/pindel.txt
-    conda create -n master-scanITD --file /home/user/ITD-pipeline/config/scanITD.txt
-    conda create -n master-pyITD --file /home/user/ITD-pipeline/config/pyITD.txt
-    conda create -n master-vep113 --file /home/user/ITD-pipeline/config/vep113.txt
-    ```
-4. Ensure all folders have permissions set to `755`:
-    ```bash
-    chmod -R 755 /path/to/your/folders
-    ```
-5. Update the following configuration files as needed:
-    - `database/somatic.indel.filter.config`
-    - `config/itd_pipeline.config`
-    - `config/config.env`
-6. Update Gmail settings for the tools as required.
+# ITD Pipeline
 
-### Run
-#### samplesheet_splicing
-1. Run the sample sheet splitting script (update folder paths as needed):
-    ```bash
-    utility/split_sample_sheet.sh OVCA_gdc_sample_sheet.tsv OVCA
-    ```
-#### run_ITD_pipeline
-- Use the following commands to run the pipeline:
-    ```bash
-    bash Run_pipeline.sh <parameters> "OV" start_sample_number end_sample_number (number is from split_sample.sh)
-    ```
-#### run_merge_caller
-- Use the following commands to run the pipeline:
-    ```bash
-    bash Run_merge_caller.sh <parameters> "OV" start_sample_number end_sample_number (number is from split_sample.sh)
-    ```
-    Or run in the background with logging:
+A comprehensive pipeline for detecting and analyzing Internal Tandem Duplications (ITDs) across cancer samples. This pipeline integrates multiple tools and supports batch processing for large datasets from GDC.
 
-#### run_vep (113)
-- Use the following commands to run the pipeline:
-    ```bash
-    bash Run_vep.sh <parameters>"OV" start_sample_number end_sample_number (number is from split_sample.sh)
-    ```
-### Notes
-- Folder names should not be too long to avoid issues with Genomon.
-### Other
-#### GDC Install
-1. Update the token path in `GDC_download.sh`.
-2. Run the script:
-    ```bash
-    bash GDC_download.sh -s gdc_sample_sheet.2024-12-14.tsv -o output_dir/
-    ```
-#### Check for Errors
-- Use the batch checking script:
-    ```bash
-    bash batch_check_sample.sh OV 1 50
-    ```
-#### Merge Sample Sheets
-- When the sample sheet is too large and needs to be split into TN pairs, merge the files before performing the GDC download.
-    ```bash
-    bash merge_sample_sheet.sh GBM 1 50 "split_sample_sheet_dir" "output_file_name (e.g., 1_50.tsv)"
-    ```
+## 📦 Installation
 
+### Clone the Repository
+```bash
+git clone https://github.com/NYCUchaolab/ITD-pipeline.git
+```
 
-    
+### Set Configuration Path
+Add the following line to your `~/.bashrc` or `~/.bash_aliases`, and then reload your shell:
+```bash
+export ITD_PIPELINE_CONFIG="/home/user/ITD_pipeline/config/ITD_pipeline.config"
+```
+
+### Create Conda Environments
+```bash
+conda create -n master-genomonITD --file /home/user/ITD-pipeline/config/genomonITD.txt
+conda create -n master-pindel --file /home/user/ITD-pipeline/config/pindel.txt
+conda create -n master-scanITD --file /home/user/ITD-pipeline/config/scanITD.txt
+conda create -n master-pyITD --file /home/user/ITD-pipeline/config/pyITD.txt
+conda create -n master-vep113 --file /home/user/ITD-pipeline/config/vep113.txt
+```
+
+### Set Folder Permissions
+Ensure all working folders have appropriate permissions:
+```bash
+chmod -R 755 /path/to/your/folders
+```
+
+### Update Configuration Files
+Manually configure the following files as needed:
+- `database/somatic.indel.filter.config`
+- `config/itd_pipeline.config`
+- `config/config.env`
+
+### Gmail Notification Setup *(Optional)*
+Update Gmail settings in your script if email notifications are required.
+
+## 🚀 Usage
+
+### 1. Split Sample Sheet
+Split the GDC sample sheet into T/N pair:
+```bash
+bash utility/split_sample_sheet.sh OV_gdc_sample_sheet.tsv OV
+```
+
+### 2. Run ITD Pipeline
+Execute the ITD pipeline for a specified range of samples:
+```bash
+bash Run_pipeline.sh OV <start_sample_number> <end_sample_number>
+```
+
+### 3. Merge Callers
+Combine results from different ITD detection tools:
+```bash
+bash Run_merge_caller.sh OV <start_sample_number> <end_sample_number>
+```
+
+### 4. Run VEP Annotation (v113)
+Run Variant Effect Predictor (VEP) for annotation:
+```bash
+bash Run_vep.sh OV <start_sample_number> <end_sample_number>
+```
+
+## ⚠️ Notes
+
+- **Avoid long folder names**, as they may cause issues with `Genomon`.
+- **Tumor-only mode:**  
+  To analyze tumor-only data:
+  1. Modify the `pindel` Perl script to disable TN filtering.
+  2. Edit `merge_caller.py` to remove TN filters.
+
+## 📥 GDC Data Download
+
+Update the token path inside `GDC_download.sh`.
+```bash
+bash GDC_download.sh -s gdc_sample_sheet.2024-12-14.tsv -o output_dir/
+```
+
+## 🔎 Error Checking
+
+Use the batch check script to identify failed samples:
+```bash
+bash batch_check_sample.sh OV 1 50
+```
+
+## 🧩 Merge Sample Sheets
+
+If the sample sheet is split (e.g., for TN pairing), merge them before downloading data:
+```bash
+bash merge_sample_sheet.sh GBM 1 50 "split_sample_sheet_dir" "1_50.tsv"
+```
+
+## 📄 License
+
+MIT License © NYCU Chao Lab
+   
